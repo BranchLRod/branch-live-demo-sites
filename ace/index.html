@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;700;800;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#002200",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#217918",
+                        "on-secondary-container": "#3d7122",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#eae8e7",
+                        "primary": "#a6001e",
+                        "secondary": "#376a1c",
+                        "secondary-fixed-dim": "#9cd67a",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#9df887",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed-dim": "#ffb3b0",
+                        "inverse-on-surface": "#f3f0f0",
+                        "surface-bright": "#fbf9f8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#b7f393",
+                        "surface-container": "#f0eded",
+                        "surface-container-highest": "#e4e2e1",
+                        "outline": "#926e6d",
+                        "background": "#fbf9f8",
+                        "tertiary-fixed-dim": "#82db6e",
+                        "on-primary-container": "#ffe4e2",
+                        "inverse-primary": "#ffb3b0",
+                        "surface-dim": "#dcd9d9",
+                        "on-tertiary-container": "#a6ff90",
+                        "tertiary": "#005f00",
+                        "on-secondary": "#ffffff",
+                        "surface": "#fbf9f8",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#d40029",
+                        "primary-fixed": "#ffdad8",
+                        "on-secondary-fixed": "#082100",
+                        "surface-variant": "#e4e2e1",
+                        "on-primary-fixed": "#410006",
+                        "on-background": "#1b1c1c",
+                        "secondary-container": "#b7f393",
+                        "outline-variant": "#e7bdba",
+                        "surface-tint": "#bf0024",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#1f5102",
+                        "inverse-surface": "#303030",
+                        "on-primary-fixed-variant": "#930019",
+                        "on-tertiary-fixed-variant": "#005300",
+                        "on-surface-variant": "#5d3f3e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Work Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tap-highlight-transparent {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  <!-- Branch Web SDK Integration -->
+  <script type="text/javascript">
+    // Branch Web SDK Snippet
+    (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener banner closeBanner closeJourney data deepview deepviewCta first init link logout removeListener setBranchViewData setIdentity track trackCommerceEvent logEvent disableTracking getBrowserFingerprintId crossPlatformIds lastAttributedTouchData setAPIResponseCallback qrCode setRequestMetaData setAPIUrl getAPIUrl setDMAParamsForEEA".split(" "), 0);
+
+    // Initialize Branch
+    // Replace 'key_live_hf3TiDf1F9TxUFRQVyQV6lmhEwnT8Te1' with your actual Branch key from https://dashboard.branch.io
+    branch.init('key_live_hf3TiDf1F9TxUFRQVyQV6lmhEwnT8Te1', function(err, data) {
+      if (err) {
+        console.error('[Branch] Init failed:', err);
+        return;
+      }
+
+      console.log('[Branch] Init success');
+
+      // Track demo page view with metadata
+      branch.logEvent('demo_page_view', {
+        account_name: 'Ace Hardware',
+        demo_page: 'home',
+        demo_type: 'journeys_pilot',
+        environment: 'github_pages',
+        timestamp: new Date().toISOString()
+      }, function(err) {
+        if (err) {
+          console.error('[Branch] Demo event failed:', err);
+        } else {
+          console.log('[Branch] Demo event fired: demo_page_view');
+        }
+      });
+    });
+  </script>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-700" data-icon="menu">menu</span>
+<span class="text-[#D40029] font-black italic tracking-tighter text-2xl font-headline">Ace Hardware</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-700" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-headline font-bold text-lg tracking-tight text-[#D40029]">Cart</span>
+</div>
+</div>
+</header>
+<main class="pt-16 pb-32">
+<!-- Search Bar Section -->
+<section class="px-6 py-4">
+<div class="relative flex items-center bg-surface-container-high rounded-xl px-4 py-3 transition-all focus-within:ring-2 focus-within:ring-primary/20">
+<span class="material-symbols-outlined text-primary-container mr-3" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder-on-surface-variant text-sm font-medium" placeholder="What can we help you find?" type="text"/>
+<span class="material-symbols-outlined text-stone-400" data-icon="mic">mic</span>
+</div>
+</section>
+<!-- Categories Scroller -->
+<section class="flex overflow-x-auto gap-3 px-6 py-2 no-scrollbar">
+<div class="flex-shrink-0 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label text-xs font-bold uppercase tracking-wider">Spring Savings</div>
+<div class="flex-shrink-0 bg-surface-container-highest text-on-surface px-4 py-2 rounded-full font-label text-xs font-bold uppercase tracking-wider">Grass Seeds</div>
+<div class="flex-shrink-0 bg-surface-container-highest text-on-surface px-4 py-2 rounded-full font-label text-xs font-bold uppercase tracking-wider">Mulch</div>
+<div class="flex-shrink-0 bg-surface-container-highest text-on-surface px-4 py-2 rounded-full font-label text-xs font-bold uppercase tracking-wider">Grills</div>
+<div class="flex-shrink-0 bg-surface-container-highest text-on-surface px-4 py-2 rounded-full font-label text-xs font-bold uppercase tracking-wider">Paint</div>
+</section>
+<!-- Spring Hero Banner -->
+<section class="px-6 py-6">
+<div class="relative overflow-hidden rounded-3xl aspect-[16/9] bg-tertiary-container group">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="vibrant garden with blooming colorful flowers and lush green lawn in soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUgguPdqxkEH1o-hU4Q-sWcFCVLIvTz2sclftYSS-pfmiH8XUneSLRQb5msjAfphGM7JygGCsS0_PwKY3eZf8Vg1s9CQpzO3deBUi2MyxIAHqR219Q4XyAbLBQGA-3FJ1NKdX6R1y4jE_e2gdquSlvz0s8bOVIo3aKdwFc8CdKeREpX2pmC4o_WwN-vDUT5wNBwsIeL5EKzt0c2h3jaepFDPZrJ4lgZXwywfW1A-4OfMWktNQzGRGuoVpindpnPbFPG8BHSHs2vDoM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8">
+<h2 class="font-headline text-3xl font-bold text-white leading-tight mb-2">Spring Savings Are in Full Bloom</h2>
+<p class="text-tertiary-fixed font-medium mb-4">Refresh your outdoor space for less.</p>
+<button class="bg-surface-container-lowest text-tertiary font-bold px-6 py-2.5 rounded-lg text-sm shadow-xl hover:scale-105 transition-transform">Shop Spring Event</button>
+</div>
+</div>
+</section>
+<!-- Promotional Cards (Bento Style) -->
+<section class="px-6 py-4 grid grid-cols-2 gap-4">
+<div class="col-span-2 bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-row items-center gap-6 overflow-hidden relative">
+<div class="flex-1 z-10">
+<span class="text-tertiary font-bold text-[10px] uppercase tracking-[0.2em] mb-2 block">Premium Care</span>
+<h3 class="font-headline text-xl font-bold mb-2">Scotts 4 Step Program</h3>
+<p class="text-sm text-on-surface-variant mb-4">Everything your lawn needs for the entire year.</p>
+<div class="text-primary font-black text-2xl mb-4">$99.99</div>
+<button class="bg-primary-container text-on-primary font-bold px-4 py-2 rounded-lg text-xs">Buy Now</button>
+</div>
+<div class="w-32 h-32 relative">
+<img class="object-contain w-full h-full" data-alt="four bags of scotts fertilizer lined up neatly on a clean concrete garage floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzpme7dSl7YbmyxHUnAxgdCQVGQWBVXVKX5Jko70W7JZhCAwtQjG1zLmACSUsLlncC4L74VvbRj1WysuAAnHnwMVZdUuHmrxiZWgUFvRSZPtHkLVaTP0e4HU_4A7QXTQZWlaq1bQdGofFntzaJmPqGkxL68s9XjSQ53yaEjbeoazQqjCjv82jaR2TA9djteKd0tyMwGr74Bp8-KGCymJqLlHg65w4IQTza7RP1-FEka6BDdmOIU8BK95xOC6XBaBex4uT63MgecNVQ"/>
+</div>
+</div>
+<div class="bg-surface-container rounded-3xl p-5 flex flex-col justify-between">
+<div>
+<h4 class="font-headline font-bold text-lg mb-1 leading-tight">O.M. Scott &amp; Sons</h4>
+<p class="text-xs text-on-surface-variant">Heritage lawn care products.</p>
+</div>
+<img class="w-full h-24 object-contain mt-4" data-alt="classic vintage style packaging of lawn fertilizer bag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsj5HJZsbS-EGZ_S0FqC10R8A9HK2_bLL9rc_-oxq9kiPQToD937ycEI0pjxtt34aNOVVllyHj-v7zrdsZKEfTfNRICVppWOl3Etkltmyh6v7LLMdBieqsgYDlwtXxYRHdfwulpw4__n_GTZp9LElo7SFaIVlZ6r7w0olRrYP67JCAayy43Bq-GbGSpoYfNE5pKpKDhvfk1rV-pnQRopJQ49WkNALTpQveZguVdw2g6macvnsEEW4JMyAzyuO1HYI62zfy5l8g59sA"/>
+</div>
+<div class="bg-surface-container rounded-3xl p-5 flex flex-col justify-between">
+<div>
+<h4 class="font-headline font-bold text-lg mb-1 leading-tight">Preen Products</h4>
+<p class="text-xs text-on-surface-variant">Stop weeds before they start.</p>
+</div>
+<img class="w-full h-24 object-contain mt-4" data-alt="yellow preen weed preventer bottle on a garden mulch background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDsQdvZFjpvLAxSIBULH1jKIfY2kSGNObQRLu69TQeZLgTH-3wvQoMUAYns0ipsj3LCXB6AuvOA467spqmz9XXPO_pABWCKlZveaB1Ck-FyHKf2py9WogyWN-hRiEvo_va34RwxKDM3ZtcLE5lydqs-woaTMVubRA3nz4YJFeRSxRdOst1D4JDwsDuWMFGCe8Raj0pQaxU8uiSCXorCy4Sly4dpyFS2hQ3K3k2PIugE8Flq0-a_aUDWjMW-y6-BVEDli5gSFf3ARJ0"/>
+</div>
+</section>
+<!-- EGO Power+ Banner -->
+<section class="px-6 py-4">
+<div class="relative rounded-3xl bg-stone-900 overflow-hidden min-h-[160px] flex items-center">
+<div class="p-8 w-2/3 z-10">
+<span class="text-secondary-fixed font-bold text-[10px] uppercase tracking-widest block mb-1">Exclusive Offer</span>
+<h2 class="text-white font-headline text-2xl font-black italic italic italic">EGO POWER+</h2>
+<p class="text-stone-300 text-sm mt-1">Save up to <span class="text-white font-bold">$200</span> on select Mowers.</p>
+<div class="mt-4 flex gap-2">
+<span class="bg-secondary text-on-secondary text-[10px] font-bold px-2 py-1 rounded">Top Rated</span>
+</div>
+</div>
+<div class="absolute right-[-10%] top-0 h-full w-1/2">
+<img class="h-full w-full object-cover transform -rotate-12 scale-125" data-alt="modern electric lawn mower with green accents on a manicured lawn background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAus74fwhdMZcHtNdycRLSvBvq4sVfTmNyEr9kD-OEgOOEC2h9WkCy8-HuiZ2RCiJor9zRhkCAvJPvg7OCK8GHqaEUf_o_bloI1YYdvQxbtrXbdRd3Ve4QsNpMgwUPpHbVHVqByvTzvhmKxfR8q0JcwdgJxSvdDiDCJbYuR5Mv8RICnqSPSM0Gehp3x9l2E984gx0vu3KMl2aCg66i4L7czTvLla--IvB4FW8ntudoLAmSTmFL0tfsn0By6hS9uz9U2ujZ-R9rN4Eu"/>
+</div>
+</div>
+</section>
+<!-- Sales & Specials Horizontal -->
+<section class="px-6 py-6">
+<div class="bg-primary/5 rounded-3xl p-6 border-l-4 border-primary">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline font-bold text-xl text-primary">Shop Sales &amp; Specials</h3>
+<span class="material-symbols-outlined text-primary" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex gap-4 overflow-x-auto no-scrollbar">
+<div class="flex-shrink-0 w-40 bg-white p-4 rounded-xl shadow-sm">
+<img class="w-full h-24 object-contain mb-2" data-alt="power drill on white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxJdomDMstQAxfbVhB3y-Kid6FjW0DA5zvU_wrdtdRFviW9bElZHVhqqgFQnkB7mXgF-o48nn6uRLGQ3jZEnal2bv8IznPEq5uN2o3ZqEZCYR1z3W_Sm6i_gzhKeYXNfcPPRbbfmvfbrmnpY-AdhSTICk4ovIqFV31JndngtmzYamy2ZooFOUHrjAKwUa7zJnBeRsAwto3mGIpP4gVwirHckAJ3AEuQEh082k8d4oT_dYHTgcWQ-EtBFHNFl5M9pSlkk2HZ_uqweGB"/>
+<p class="text-xs font-bold line-clamp-2 mb-1">DeWalt 20V Max Drill</p>
+<p class="text-primary font-black">$129.00</p>
+</div>
+<div class="flex-shrink-0 w-40 bg-white p-4 rounded-xl shadow-sm">
+<img class="w-full h-24 object-contain mb-2" data-alt="expandable garden hose neatly coiled" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbyyASyGgxVeXHHtODdbnn2Iu0CEr0WM5znZShzGSkOuXuFYxMY5bxBUyQyIJ-EIcd5F-zqHi_I2j2KJfI1mTaaHUboqBiyuJ9aXzydeEEScZLKIit60IqU5rZMm6YcMoVAwkoTIrp6MZFBgBE93_krajd4spHP_DNxdeM4fuRZwfeQBp00g0ZU5qbZ1Ydp3-r1eO-FAtaCo3bHEHyAqBU_HCJ8CvkrWe4dkHTKnYlrFrjlze-2DLD0fbQ24UzlaReMx78N5A9YVk1"/>
+<p class="text-xs font-bold line-clamp-2 mb-1">Flexzilla Garden Hose</p>
+<p class="text-primary font-black">$44.99</p>
+</div>
+<div class="flex-shrink-0 w-40 bg-white p-4 rounded-xl shadow-sm">
+<img class="w-full h-24 object-contain mb-2" data-alt="bag of hardwood lump charcoal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKuGdPmpnDIsoQfTBBkyEkqj7V2Htx2Jjw0U94quNi0600Pr3h0gMkMsUL2vj4qdhqnV4lLYJcdN5InCX2vUlWtJDsuBtmnUC55g2q1p_KNUsYKEezZ37JdspkQq0KeT-IqxtnispBC7Jw0Z3f0OL2fef9BN6RSE9Cak1S644I9xx9eO0ZVBY4v_BrOFtN5vggDC9GiA3aSHckj3Nlfk9hlZwelIz5X2EPFeHnkvFT7icQoVFqGeX3zYe8RMH4FpiS0KM8tdX5-iDF"/>
+<p class="text-xs font-bold line-clamp-2 mb-1">Royal Oak Charcoal</p>
+<p class="text-primary font-black">$12.99</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Local Store Anchor (Simulated Modal/Drawer) -->
+<section class="fixed bottom-[88px] left-0 w-full px-4 z-40">
+<div class="bg-surface-container-lowest/90 backdrop-blur-xl shadow-2xl rounded-2xl p-4 flex items-center justify-between border border-stone-100">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="location_on" data-weight="fill" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-stone-500 tracking-tighter">Current Store</p>
+<p class="text-sm font-bold">Select Your Local Ace</p>
+</div>
+</div>
+<button class="bg-primary-container text-white px-4 py-2 rounded-lg text-xs font-bold">Find Store</button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50">
+<div class="bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.04)] rounded-t-3xl border-t border-stone-100 dark:border-stone-800 flex justify-around items-center px-4 pb-6 pt-2">
+<!-- Home (Active) -->
+<div class="flex flex-col items-center justify-center bg-stone-100 dark:bg-stone-800 text-[#D40029] rounded-xl px-3 py-1 tap-highlight-transparent active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-0.5" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Home</span>
+</div>
+<!-- Categories -->
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-3 py-1 tap-highlight-transparent active:scale-90 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined mb-0.5" data-icon="grid_view">grid_view</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Categories</span>
+</div>
+<!-- Rewards -->
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-3 py-1 tap-highlight-transparent active:scale-90 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined mb-0.5" data-icon="star">star</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Rewards</span>
+</div>
+<!-- Search -->
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-3 py-1 tap-highlight-transparent active:scale-90 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined mb-0.5" data-icon="search">search</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Search</span>
+</div>
+<!-- Account -->
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-3 py-1 tap-highlight-transparent active:scale-90 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined mb-0.5" data-icon="person">person</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Account</span>
+</div>
+</div>
+</nav>
+</body></html>
