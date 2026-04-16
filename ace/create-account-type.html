@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ace Hardware - Home</title>
+    <title>Ace Hardware - Create Account Type</title>
     <style>
         * {
             margin: 0;
@@ -43,31 +43,28 @@
             position: absolute;
             cursor: pointer;
             background-color: transparent;
+            z-index: 10;
+            pointer-events: auto;
         }
 
-        /* Account icon hotspot - positioned in top-right area */
-        .hotspot-account {
-            top: 0.3%;
-            right: 3.5%;
-            width: 6%;
-            height: 2%;
-        }
-
-        /* Visual debug overlay - remove in production */
-        .hotspot:hover {
-            background-color: rgba(255, 0, 0, 0.1);
+        /* Online Account Select button hotspot */
+        .hotspot-online-select {
+            top: 42%;
+            left: 8%;
+            width: 84%;
+            height: 3.5%;
         }
     </style>
 </head>
 <body>
     <div class="mobile-container">
         <div class="screenshot-wrapper">
-            <img src="../references/page-1-home-full.png"
-                 alt="Ace Hardware Home Page"
+            <img src="../references/page-3-account-type-full.png"
+                 alt="Ace Hardware Create Account Type"
                  class="screenshot-image">
 
-            <!-- Clickable hotspot for account icon -->
-            <a href="account-menu.html" class="hotspot hotspot-account" aria-label="Account menu"></a>
+            <!-- Clickable hotspot for Online Account Select button -->
+            <a href="create-account-form.html" class="hotspot hotspot-online-select" aria-label="Select Online Account"></a>
         </div>
     </div>
 </body>
