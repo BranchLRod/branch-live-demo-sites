@@ -38,14 +38,33 @@
             width: 100%;
             height: auto;
         }
+
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            background-color: transparent;
+            z-index: 10;
+            pointer-events: auto;
+        }
+
+        /* Back arrow hotspot */
+        .hotspot-back {
+            top: 0.5%;
+            left: 2%;
+            width: 8%;
+            height: 2%;
+        }
     </style>
 </head>
 <body>
     <div class="mobile-container">
         <div class="screenshot-wrapper">
-            <img src="assets/page-4-create-account-full.png"
+            <img src="../references/page-4-create-account-full.png"
                  alt="Ace Hardware Create Account Form"
                  class="screenshot-image">
+
+            <!-- Clickable hotspot for back arrow -->
+            <a href="index.html" class="hotspot hotspot-back" aria-label="Back"></a>
         </div>
     </div>
 </body>
