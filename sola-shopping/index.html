@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sola Shopping - Life, Simplified</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="account.css">
+    
+    <!-- Branch Web SDK -->
+    <!-- <script src="https://cdn.branch.io/branch-latest.min.js"></script> -->
+    <!-- Above line comment out as we are pulling sdk from Branch CDN at runtime -->
+    <script>
+        // Load Branch
+        (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener banner closeBanner closeJourney data deepview deepviewCta first init link logout removeListener setBranchViewData setIdentity track trackCommerceEvent logEvent disableTracking getBrowserFingerprintId crossPlatformIds lastAttributedTouchData setAPIResponseCallback qrCode setRequestMetaData setAPIUrl getAPIUrl setDMAParamsForEEA".split(" "), 0);
+     </script>
+</head>
+<body>
+    <!-- Promo Banner -->
+    <div class="promo-banner">
+        <div class="container">
+            <p class="promo-text">Free Shipping on Orders $50+ | New App Members Get 10% Off</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="https://f004.backblazeb2.com/file/sola-shopping/full/sola-logo.svg" alt="Sola Shopping" class="logo-img">
+                    <span class="logo-text">Shopping</span>
+                </div>
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <span class="hamburger"></span>
+                    <span class="hamburger"></span>
+                    <span class="hamburger"></span>
+                </button>
+                <nav class="nav-menu" id="navMenu">
+                    <a href="#" data-category="all" class="nav-link active">All Products</a>
+                    <a href="#" data-category="clothes" class="nav-link">Clothes</a>
+                    <a href="#" data-category="shoes" class="nav-link">Shoes</a>
+                    <a href="#" data-category="electronics" class="nav-link">Electronics</a>
+                </nav>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <button class="wishlist-btn" id="wishlistBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="wishlist-count" id="wishlistCount">0</span>
+                    </button>
+                    <div class="user-info">
+                        <button class="user-dropdown-btn" id="userDropdownBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span class="user-name">Sign In</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault(); showAccountModal('signin');">Sign In</a>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault(); showAccountModal('signup');">Create Account</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault(); showNotification('Browse as guest');">Continue as Guest</a>
+                        </div>
+                    </div>
+                    <button class="cart-btn" id="cartBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 2L6 9H18L15 2"></path>
+                            <path d="M6 9H18L17 21H7L6 9Z"></path>
+                            <circle cx="9" cy="22" r="1"></circle>
+                            <circle cx="15" cy="22" r="1"></circle>
+                        </svg>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-badge">New Spring Collection</span>
+                <h1 class="hero-title">Life, Simplified</h1>
+                <p class="hero-subtitle">Curated essentials that move with your life — fashion, electronics, and everything in between</p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" id="shopNowBtn">Shop New Arrivals</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop by Category -->
+    <section class="shop-by-category">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="category-grid">
+                <div class="category-card" data-category="clothes" data-gender="women">
+                    <div class="category-image-wrapper">
+                        <img src="https://f004.backblazeb2.com/file/sola-shopping/full/sola-shopping-womens-floral-dress.png" alt="Women's Fashion" class="category-image">
+                    </div>
+                    <h3 class="category-title">Women's Fashion</h3>
+                    <p class="category-subtitle">Dresses, Tops & More</p>
+                    <button class="btn btn-category">Shop Women's</button>
+                </div>
+                <div class="category-card" data-category="clothes" data-gender="men">
+                    <div class="category-image-wrapper">
+                        <img src="https://f004.backblazeb2.com/file/sola-shopping/full/sola-shopping-mens-black-t-m.png" alt="Men's Fashion" class="category-image">
+                    </div>
+                    <h3 class="category-title">Men's Fashion</h3>
+                    <p class="category-subtitle">Shirts, Tees & More</p>
+                    <button class="btn btn-category">Shop Men's</button>
+                </div>
+                <div class="category-card" data-category="electronics">
+                    <div class="category-image-wrapper">
+                        <img src="https://f004.backblazeb2.com/file/sola-shopping/small/sola-shopping-laptop.png" alt="Electronics" class="category-image">
+                    </div>
+                    <h3 class="category-title">Electronics</h3>
+                    <p class="category-subtitle">Laptops & Accessories</p>
+                    <button class="btn btn-category">Shop Electronics</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filter -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-header">
+                <h2 class="products-heading">All Products</h2>
+                <span class="products-count" id="productsCount">0 items</span>
+            </div>
+            <div class="filter-wrapper">
+                <div class="filter-group">
+                    <label>Category</label>
+                    <div class="filter-buttons" id="categoryFilter">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="clothes">Clothes</button>
+                        <button class="filter-btn" data-filter="shoes">Shoes</button>
+                        <button class="filter-btn" data-filter="electronics">Electronics</button>
+                    </div>
+                </div>
+                <div class="filter-group" id="genderFilterGroup">
+                    <label>Gender</label>
+                    <div class="filter-buttons" id="genderFilter">
+                        <button class="filter-btn active" data-gender="all">All</button>
+                        <button class="filter-btn" data-gender="men">Men</button>
+                        <button class="filter-btn" data-gender="women">Women</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Sort By</label>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="featured">Featured</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="newest">Newest</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products">
+        <div class="container">
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-body" id="modalBody">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Shopping Cart</h2>
+            <button class="cart-close" id="cartClose">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be loaded here -->
+        </div>
+        <div class="cart-footer">
+            <div class="promo-code-section">
+                <input type="text" id="promoCodeInput" class="promo-input" placeholder="Enter promo code">
+                <button class="btn-apply-promo" id="applyPromoBtn">Apply</button>
+            </div>
+            <div class="shipping-message" id="shippingMessage">
+                <!-- Dynamic shipping message will appear here -->
+            </div>
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="cartSubtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span id="cartShipping">FREE</span>
+                </div>
+                <div class="summary-row promo-discount" id="promoDiscountRow" style="display: none;">
+                    <span>Discount:</span>
+                    <span id="promoDiscount">-$0.00</span>
+                </div>
+                <div class="summary-row summary-tax">
+                    <span>Tax:</span>
+                    <span id="cartTax">Calculated at checkout</span>
+                </div>
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0.00</span>
+                </div>
+            </div>
+            <div class="cart-policies">
+                <div class="policy-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    </svg>
+                    <span>Free delivery over $50</span>
+                </div>
+                <div class="policy-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>30-day free returns</span>
+                </div>
+            </div>
+            <div class="trust-badges">
+                <span class="trust-badge">🔒 Secure Checkout</span>
+                <span class="trust-badge">💳 All Payment Methods</span>
+            </div>
+            <button class="btn btn-primary btn-block" id="checkoutBtn">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="overlay" id="cartOverlay"></div>
+
+    <!-- App Download Section - Hidden to allow Branch Journeys to control app promotion -->
+    <!-- Removed: Hard-coded app download CTA replaced by Branch Journeys targeting -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Sola Shopping</h3>
+                    <p>Curated essentials for modern living. Quality pieces that move with your life, delivered seamlessly across web and mobile.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns & Exchanges</a></li>
+                        <li><a href="#">Order Tracking</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Accessibility</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Stay Connected</h3>
+                    <p>Sign up for exclusive deals and new arrivals</p>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Your email" class="newsletter-input" id="newsletterEmail">
+                        <button class="btn btn-secondary" id="newsletterBtn">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Sola Shopping. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Branch SDK Integration for Sola Shopping
+        // This file handles all Branch deep linking functionality for the demo
+
+        // Branch configuration
+        const BRANCH_KEY = 'key_live_avBePHQiKVvGHzz8PsZQXgjctxmaKLfv';
+        const BRANCH_DOMAIN = 'solashop.app.link';
+        // Demo app URLs - pointing to the actual demo app
+        const APP_STORE_URL = 'https://sola-shopping.com/';
+        const PLAY_STORE_URL = 'https://sola-shopping.com/';
+
+        // Initialize Branch and create helper namespace
+        window.solaBranch = window.solaBranch || {};
+
+        // Acquisition Context Manager
+        (function initAcquisitionContext() {
+            const ACQUISITION_KEY = 'sola_acquisition_context';
+            const LAST_TOUCH_KEY = 'sola_last_touch_context';
+
+            // Parse URL query parameters
+            function getUrlParams() {
+                const params = {};
+                const searchParams = new URLSearchParams(window.location.search);
+                searchParams.forEach((value, key) => {
+                    params[key] = value;
+                });
+                return params;
+            }
+
+            // Capture initial acquisition context
+            function captureAcquisitionContext(branchData = {}) {
+                const urlParams = getUrlParams();
+                const timestamp = new Date().toISOString();
+
+                const context = {
+                    // Timestamps
+                    first_touch_timestamp: timestamp,
+                    last_touch_timestamp: timestamp,
+
+                    // Page context
+                    landing_url: window.location.href,
+                    referrer: document.referrer || '(direct)',
+                    user_agent: navigator.userAgent,
+                    source_surface: 'web',
+
+                    // UTM parameters
+                    utm_source: urlParams.utm_source || null,
+                    utm_medium: urlParams.utm_medium || null,
+                    utm_campaign: urlParams.utm_campaign || null,
+                    utm_content: urlParams.utm_content || null,
+                    utm_term: urlParams.utm_term || null,
+
+                    // Branch parameters from session data
+                    branch_campaign: branchData['~campaign'] || branchData.campaign || null,
+                    branch_channel: branchData['~channel'] || branchData.channel || null,
+                    branch_feature: branchData['~feature'] || branchData.feature || null,
+                    branch_referring_link: branchData['~referring_link'] || null,
+
+                    // Normalized attribution fields
+                    campaign: urlParams.utm_campaign || branchData['~campaign'] || branchData.campaign || null,
+                    channel: urlParams.utm_medium || branchData['~channel'] || branchData.channel || null,
+                    feature: branchData['~feature'] || branchData.feature || null,
+                    referring_link: branchData['~referring_link'] || null
+                };
+
+                return context;
+            }
+
+            // Get or create acquisition context
+            function getAcquisitionContext() {
+                try {
+                    const stored = localStorage.getItem(ACQUISITION_KEY);
+                    if (stored) {
+                        return JSON.parse(stored);
+                    }
+                } catch (err) {
+                    console.warn('Failed to parse acquisition context:', err);
+                }
+                return null;
+            }
+
+            // Store acquisition context (first touch only)
+            function storeFirstTouchContext(context) {
+                try {
+                    localStorage.setItem(ACQUISITION_KEY, JSON.stringify(context));
+                    console.log('[Acquisition] First touch context captured');
+                } catch (err) {
+                    console.error('Failed to store acquisition context:', err);
+                }
+            }
+
+            // Update last touch context (always)
+            function updateLastTouchContext(context) {
+                try {
+                    const lastTouch = {
+                        ...context,
+                        last_touch_timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem(LAST_TOUCH_KEY, JSON.stringify(lastTouch));
+                    console.log('[Acquisition] Last touch context updated');
+                } catch (err) {
+                    console.error('Failed to update last touch context:', err);
+                }
+            }
+
+            // Initialize on page load
+            function init(branchData = {}) {
+                const existingContext = getAcquisitionContext();
+                const currentContext = captureAcquisitionContext(branchData);
+
+                // Store first touch if not already present
+                if (!existingContext) {
+                    storeFirstTouchContext(currentContext);
+                } else {
+                    console.log('[Acquisition] First touch already captured:', new Date(existingContext.first_touch_timestamp).toLocaleString());
+                }
+
+                // Always update last touch
+                updateLastTouchContext(currentContext);
+            }
+
+            // Public API
+            window.solaAcquisition = {
+                init: init,
+                getFirstTouch: getAcquisitionContext,
+                getLastTouch: function() {
+                    try {
+                        const stored = localStorage.getItem(LAST_TOUCH_KEY);
+                        return stored ? JSON.parse(stored) : null;
+                    } catch (err) {
+                        return null;
+                    }
+                },
+                reset: function() {
+                    localStorage.removeItem(ACQUISITION_KEY);
+                    localStorage.removeItem(LAST_TOUCH_KEY);
+                    console.log('[Acquisition] Context reset');
+                },
+                getAttributionData: function() {
+                    const firstTouch = getAcquisitionContext();
+                    const lastTouch = this.getLastTouch();
+                    return {
+                        first_touch: firstTouch,
+                        last_touch: lastTouch
+                    };
+                }
+            };
+        })();
+
+        (function initBranch() {
+            // Check if Branch SDK is loaded
+            if (typeof branch !== 'undefined') {
+                // Initialize Branch with custom domain
+                branch.init(BRANCH_KEY, {
+                    branch_domain: BRANCH_DOMAIN
+                }, function(err, data) {
+                    if (err) {
+                        console.error('Branch initialization error:', err);
+                        // Still capture acquisition context even if Branch fails
+                        window.solaAcquisition.init({});
+                        return;
+                    }
+
+                    console.log('Branch initialized successfully with domain:', BRANCH_DOMAIN);
+                    console.log('Branch session data:', data);
+
+                    // Capture acquisition context with Branch data
+                    window.solaAcquisition.init(data || {});
+
+                    // Handle incoming deep link data
+                    if (data && data.data_parsed) {
+                        handleIncomingDeepLink(data.data_parsed);
+                    }
+                });
+
+                // Track page view
+                branch.track('pageview', {
+                    page: 'shopping_home',
+                    vertical: 'shopping',
+                    source_surface: 'web'
+                });
+
+                // Setup Branch helper methods
+                setupBranchHelpers();
+
+                // Initialize Journey view data on page load
+                if (window.solaBranch && window.solaBranch.updateViewData) {
+                    window.solaBranch.updateViewData();
+                }
+            } else {
+                console.warn('Branch SDK not loaded. Deep linking features will be limited.');
+                // Capture acquisition context even without Branch
+                window.solaAcquisition.init({});
+                // Provide fallback functionality
+                provideFallbackLinks();
+                setupFallbackHelpers();
+            }
+        })();
+
+        // Setup Branch helper methods under window.solaBranch
+        function setupBranchHelpers() {
+            // Helper to enrich event data with acquisition context
+            function enrichEventWithAcquisition(eventData) {
+                const firstTouch = window.solaAcquisition ? window.solaAcquisition.getFirstTouch() : null;
+                if (firstTouch) {
+                    if (firstTouch.campaign) eventData.acquisition_campaign = firstTouch.campaign;
+                    if (firstTouch.channel) eventData.acquisition_channel = firstTouch.channel;
+                    if (firstTouch.utm_source) eventData.acquisition_utm_source = firstTouch.utm_source;
+                    if (firstTouch.utm_medium) eventData.acquisition_utm_medium = firstTouch.utm_medium;
+                }
+                return eventData;
+            }
+
+            // Helper to update Branch Journey view data for dynamic personalization
+            window.solaBranch.updateViewData = function(updates = {}) {
+                if (typeof branch === 'undefined' || typeof branch.setBranchViewData !== 'function') {
+                    console.warn('Branch SDK or setBranchViewData not available');
+                    return;
+                }
+
+                // Get current user data
+                const user = window.getCurrentUser ? window.getCurrentUser() : null;
+
+                // Get acquisition context
+                const firstTouch = window.solaAcquisition ? window.solaAcquisition.getFirstTouch() : null;
+
+                // Build view data object (safe - no PII)
+                const viewData = {
+                    // User context (only non-PII fields)
+                    first_name: user && user.firstName ? user.firstName : null,
+                    company: user && user.company ? user.company : null,
+                    user_id: user && user.id ? user.id : null,
+
+                    // Acquisition context
+                    utm_source: firstTouch && firstTouch.utm_source ? firstTouch.utm_source : null,
+                    utm_campaign: firstTouch && firstTouch.campaign ? firstTouch.campaign : null,
+                    utm_medium: firstTouch && firstTouch.utm_medium ? firstTouch.utm_medium : null,
+                    utm_channel: firstTouch && firstTouch.channel ? firstTouch.channel : null,
+
+                    // Override with any provided updates
+                    ...updates
+                };
+
+                // Remove null values to keep payload clean
+                Object.keys(viewData).forEach(key => {
+                    if (viewData[key] === null || viewData[key] === undefined) {
+                        delete viewData[key];
+                    }
+                });
+
+                // Update Branch view data for Journey personalization
+                branch.setBranchViewData(viewData);
+                console.log('[Branch] setBranchViewData updated');
+            };
+            // Set user identity
+            window.solaBranch.setIdentity = function(userId, userData = {}) {
+                console.log('[Branch] setIdentity called for web demo user');
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for setIdentity');
+                    return;
+                }
+
+                // Call Branch setIdentity with userId only
+                // Note: Web SDK setIdentity only accepts userId and callback
+                // Acquisition context is already enriched in events via enrichEventWithAcquisition()
+                branch.setIdentity(userId, function(err, data) {
+                    if (err) {
+                        console.error('Branch setIdentity error:', err);
+                    } else {
+                        console.log('[Branch] setIdentity success (web)');
+                    }
+                });
+            };
+
+            // Logout user
+            window.solaBranch.logout = function() {
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for logout');
+                    return;
+                }
+
+                branch.logout(function(err) {
+                    if (err) {
+                        console.error('Branch logout error:', err);
+                    } else {
+                        console.log('Branch user logged out');
+                    }
+                });
+            };
+
+            // Track view product
+            window.solaBranch.trackViewProduct = function(product) {
+                console.log('[Branch] trackViewProduct called:', product.name);
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for trackViewProduct');
+                    return;
+                }
+
+                let eventData = {
+                    product_id: product.id,
+                    product_name: product.name,
+                    category: product.category || '',
+                    price: product.price,
+                    source_surface: 'web',
+                    placement: 'product_detail',
+                    deep_link_path: '/product/' + product.id
+                };
+
+                // Enrich with acquisition context
+                eventData = enrichEventWithAcquisition(eventData);
+
+                console.log('[Branch] Using branch.logEvent() for VIEW_ITEM');
+                branch.logEvent('VIEW_ITEM', eventData, function(err) {
+                    if (err) {
+                        console.error('[Branch] VIEW_ITEM error:', err);
+                    } else {
+                        console.log('[Branch] VIEW_ITEM success');
+                    }
+                });
+
+                // Update view data for Journey personalization
+                window.solaBranch.updateViewData({
+                    product_id: product.id,
+                    product_name: product.name,
+                    product_price: product.price,
+                    product_category: product.category || ''
+                });
+            };
+
+            // Track add to cart
+            window.solaBranch.trackAddToCart = function(product, cartData = {}) {
+                console.log('[Branch] trackAddToCart called:', product.name);
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for trackAddToCart');
+                    return;
+                }
+
+                let eventData = {
+                    product_id: product.id,
+                    product_name: product.name,
+                    category: product.category || '',
+                    price: product.price,
+                    quantity: 1,
+                    cart_value: cartData.total || 0,
+                    cart_item_count: cartData.itemCount || 0,
+                    source_surface: 'web',
+                    deep_link_path: '/cart'
+                };
+
+                // Enrich with acquisition context
+                eventData = enrichEventWithAcquisition(eventData);
+
+                console.log('[Branch] Using branch.logEvent() for ADD_TO_CART');
+                branch.logEvent('ADD_TO_CART', eventData, function(err) {
+                    if (err) {
+                        console.error('[Branch] ADD_TO_CART error:', err);
+                    } else {
+                        console.log('[Branch] ADD_TO_CART success');
+                    }
+                });
+
+                // Update view data for Journey personalization
+                window.solaBranch.updateViewData({
+                    product_id: product.id,
+                    product_name: product.name,
+                    cart_value: cartData.total || 0,
+                    cart_items_count: cartData.itemCount || 0
+                });
+            };
+
+            // Track view cart
+            window.solaBranch.trackViewCart = function(cartData) {
+                console.log('[Branch] trackViewCart called with', cartData.itemCount, 'items');
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for trackViewCart');
+                    return;
+                }
+
+                let eventData = {
+                    cart_value: cartData.total || 0,
+                    cart_item_count: cartData.itemCount || 0,
+                    source_surface: 'web',
+                    deep_link_path: '/cart'
+                };
+
+                // Enrich with acquisition context
+                eventData = enrichEventWithAcquisition(eventData);
+
+                console.log('[Branch] Using branch.logEvent() for VIEW_CART');
+                branch.logEvent('VIEW_CART', eventData, function(err) {
+                    if (err) {
+                        console.error('[Branch] VIEW_CART error:', err);
+                    } else {
+                        console.log('[Branch] VIEW_CART success');
+                    }
+                });
+
+                // Update view data for Journey personalization
+                window.solaBranch.updateViewData({
+                    cart_value: cartData.total || 0,
+                    cart_items_count: cartData.itemCount || 0
+                });
+            };
+
+            // Track start checkout
+            window.solaBranch.trackStartCheckout = function(cartData) {
+                console.log('[Branch] trackStartCheckout called with total:', cartData.total);
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for trackStartCheckout');
+                    return;
+                }
+
+                let eventData = {
+                    cart_value: cartData.total || 0,
+                    cart_item_count: cartData.itemCount || 0,
+                    source_surface: 'web',
+                    deep_link_path: '/checkout'
+                };
+
+                // Enrich with acquisition context
+                eventData = enrichEventWithAcquisition(eventData);
+
+                console.log('[Branch] Using branch.logEvent() for INITIATE_PURCHASE');
+                branch.logEvent('INITIATE_PURCHASE', eventData, function(err) {
+                    if (err) {
+                        console.error('[Branch] INITIATE_PURCHASE error:', err);
+                    } else {
+                        console.log('[Branch] INITIATE_PURCHASE success');
+                    }
+                });
+            };
+
+            // Track purchase
+            window.solaBranch.trackPurchase = function(orderData) {
+                console.log('[Branch] trackPurchase called with order:', orderData.orderId);
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for trackPurchase');
+                    return;
+                }
+
+                // Build products array from cart
+                const products = (orderData.products || []).map(item => ({
+                    product_id: item.id || '',
+                    product_name: item.name || '',
+                    price: item.price || 0,
+                    quantity: item.quantity || 1
+                }));
+
+                let eventData = {
+                    order_id: orderData.orderId || '',
+                    revenue: orderData.total || 0,
+                    cart_value: orderData.subtotal || 0,
+                    shipping: orderData.shipping || 0,
+                    cart_item_count: orderData.itemCount || 0,
+                    products: products,
+                    source_surface: 'web',
+                    deep_link_path: '/order/' + (orderData.orderId || 'confirmation')
+                };
+
+                // Enrich with acquisition context
+                eventData = enrichEventWithAcquisition(eventData);
+
+                console.log('[Branch] PURCHASE payload:', JSON.stringify(eventData, null, 2));
+                console.log('[Branch] Using branch.logEvent() for PURCHASE');
+                branch.logEvent('PURCHASE', eventData, function(err) {
+                    if (err) {
+                        console.error('[Branch] PURCHASE error:', err);
+                    } else {
+                        console.log('[Branch] PURCHASE success');
+                    }
+                });
+            };
+
+            // Create product deep link
+            window.solaBranch.createProductLink = function(product, callback) {
+                console.log('[Branch] createProductLink called for:', product.name);
+
+                if (typeof branch === 'undefined') {
+                    console.warn('Branch SDK not available for createProductLink');
+                    if (callback) callback(new Error('Branch not available'), null);
+                    return;
+                }
+
+                const linkData = {
+                    product_id: product.id,
+                    product_name: product.name,
+                    category: product.category || '',
+                    price: product.price,
+                    deep_link_path: `/product/${product.id}`,
+                    $deeplink_path: `/product/${product.id}`,
+                    $og_title: product.name,
+                    $og_description: product.description || '',
+                    $og_image_url: product.image || '',
+                    $desktop_url: window.location.origin,
+                    $ios_url: APP_STORE_URL,
+                    $android_url: PLAY_STORE_URL
+                };
+
+                branch.link({
+                    channel: 'web',
+                    feature: 'product_share',
+                    campaign: 'sola_shopping',
+                    data: linkData
+                }, function(err, link) {
+                    if (callback) callback(err, link);
+                });
+            };
+
+            console.log('Branch helper methods initialized under window.solaBranch');
+        }
+
+        // Setup fallback helpers when Branch is unavailable
+        function setupFallbackHelpers() {
+            window.solaBranch.setIdentity = function() { console.log('Branch setIdentity (fallback)'); };
+            window.solaBranch.logout = function() { console.log('Branch logout (fallback)'); };
+            window.solaBranch.trackViewProduct = function() { console.log('Branch trackViewProduct (fallback)'); };
+            window.solaBranch.trackAddToCart = function() { console.log('Branch trackAddToCart (fallback)'); };
+            window.solaBranch.trackViewCart = function() { console.log('Branch trackViewCart (fallback)'); };
+            window.solaBranch.trackStartCheckout = function() { console.log('Branch trackStartCheckout (fallback)'); };
+            window.solaBranch.trackPurchase = function() { console.log('Branch trackPurchase (fallback)'); };
+            window.solaBranch.createProductLink = function(product, cb) {
+                console.log('Branch createProductLink (fallback)');
+                if (cb) cb(new Error('Branch not available'), null);
+            };
+        }
+
+        // Handle incoming deep link data
+        function handleIncomingDeepLink(data) {
+            console.log('Handling incoming deep link:', data);
+            
+            // Check if this is a return from app
+            if (data.product_id) {
+                // User came back from viewing a product in app
+                highlightProduct(data.product_id);
+            }
+            
+            if (data.cart_updated) {
+                // Cart was updated in app, sync it
+                syncCartFromApp(data.cart);
+            }
+            
+            if (data.user_authenticated) {
+                // User authenticated in app
+                updateUserSession(data.user);
+            }
+        }
+
+        // Create Branch deep link
+        window.createBranchLink = function(options) {
+            const {
+                feature = 'web_to_app',
+                channel = 'web',
+                campaign = 'sola_demo',
+                data = {}
+            } = options;
+            
+            // Add timestamp and session info
+            const linkData = {
+                ...data,
+                timestamp: new Date().toISOString(),
+                web_url: window.location.href
+            };
+            
+            if (typeof branch !== 'undefined') {
+                // Set link data
+                const linkOptions = {
+                    channel: channel,
+                    feature: feature,
+                    campaign: campaign,
+                    data: linkData,
+                    tags: ['demo', 'shopping', feature]
+                };
+                
+                // Add desktop fallback URL
+                linkOptions.data['$desktop_url'] = window.location.href;
+                linkOptions.data['$ios_url'] = APP_STORE_URL;
+                linkOptions.data['$android_url'] = PLAY_STORE_URL;
+                
+                // Generate and open the link
+                branch.link(linkOptions, function(err, link) {
+                    if (err) {
+                        console.error('Error creating Branch link:', err);
+                        openFallbackLink(data);
+                        return;
+                    }
+                    
+                    console.log('Branch link created:', link);
+
+                    // Track the event
+                    branch.logEvent('SHARE', {
+                        feature: feature,
+                        vertical: 'shopping',
+                        source_surface: 'web'
+                    });
+                    
+                    // Open the link
+                    openBranchLink(link, data);
+                });
+            } else {
+                // Fallback if Branch is not available
+                openFallbackLink(data);
+            }
+        };
+
+        // Open Branch link with appropriate behavior
+        function openBranchLink(link, data) {
+            // Check if mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Try to open app directly
+                window.location.href = link;
+            } else {
+                // Desktop: Show modal with QR code and options
+                showDeepLinkModal(link, data);
+            }
+        }
+
+        // Generate QR code using Branch SDK
+        function generateQRCode(link, data) {
+            console.log('generateQRCode called with:', { link, data });
+            console.log('Branch SDK available:', typeof branch !== 'undefined');
+            console.log('Branch object:', branch);
+            
+            // Test if branch.qrCode method exists
+            if (typeof branch !== 'undefined' && branch.qrCode) {
+                console.log('branch.qrCode method exists');
+            } else {
+                console.log('branch.qrCode method does not exist');
+            }
+            
+            // Try Branch SDK first, fallback if it fails
+            
+            if (typeof branch !== 'undefined') {
+                const qrCodeSettings = {
+                    "code_color": "#000000",
+                    "background_color": "#FFFFFF",
+                    "margin": 5,
+                    "width": 1000,
+                    "image_format": "png"
+                };
+                
+                const qrCodeParams = {
+                    tags: ['demo', 'shopping', 'product_view'],
+                    channel: 'web',
+                    feature: 'create link',
+                    stage: 'created link',
+                    type: 1,
+                    data: {
+                        ...data,
+                        '$desktop_url': link || window.location.href,
+                        '$ios_url': APP_STORE_URL,
+                        '$android_url': PLAY_STORE_URL,
+                        '$og_title': 'Sola Shopping - ' + (data.product_name || 'Product'),
+                        '$og_description': 'Continue shopping in the Sola Shopping app',
+                        '$og_image_url': 'https://f004.backblazeb2.com/file/sola-shopping/full/sola-logo.svg'
+                    }
+                };
+                
+                console.log('Calling branch.qrCode with params:', qrCodeParams);
+                console.log('QR code settings:', qrCodeSettings);
+                
+                branch.qrCode(qrCodeParams, qrCodeSettings, function(err, qrCode) {
+                    console.log('QR Code callback received:', { err, qrCode });
+                    const qrContainer = document.getElementById('qrCodeContainer');
+                    
+                    if (err) {
+                        console.error('QR Code generation error:', err);
+                        console.log('Attempting fallback QR code generation');
+                        generateFallbackQRCode(link, qrContainer);
+                        return;
+                    }
+                    
+                    if (qrContainer && qrCode) {
+                        console.log('QR Code generated successfully, displaying image');
+                        qrContainer.innerHTML = `<img src="data:image/png;charset=utf-8;base64,${qrCode.base64()}" width="200" height="200" alt="QR Code">`;
+                    } else {
+                        console.error('QR Code generated but no container or invalid response');
+                        if (qrContainer) {
+                            qrContainer.innerHTML = '<div class="qr-error">QR code generated but failed to display</div>';
+                        }
+                    }
+                });
+            } else {
+                console.error('Branch SDK not available');
+                // Fallback if Branch is not available
+                const qrContainer = document.getElementById('qrCodeContainer');
+                if (qrContainer) {
+                    console.log('Using fallback QR code generation');
+                    generateFallbackQRCode(link, qrContainer);
+                }
+            }
+        }
+
+        // Fallback QR code generator using a public API
+        function generateFallbackQRCode(link, container) {
+            console.log('Generating fallback QR code for:', link);
+            
+            if (!link) {
+                // Create a fallback Branch link if no link provided
+                const fallbackLink = `https://${BRANCH_DOMAIN}/?feature=product_view&channel=web&campaign=sola_demo`;
+                console.log('No link provided, using fallback Branch link:', fallbackLink);
+                link = fallbackLink;
+            }
+            
+            // Use a free QR code API as fallback
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}`;
+            
+            if (container) {
+                container.innerHTML = `
+                    <div class="qr-loading">Generating QR Code...<br><small>This may take a few seconds</small></div>
+                    <img src="${qrApiUrl}" 
+                         width="200" 
+                         height="200" 
+                         alt="QR Code" 
+                         style="display: none;"
+                         onload="this.style.display='block'; this.previousElementSibling.style.display='none';"
+                         onerror="this.previousElementSibling.innerHTML='<div class=&quot;qr-error&quot;>Failed to generate QR code</div>'; this.style.display='none';">
+                `;
+            }
+        }
+    </script>
+    
+    <script>
+        // Show modal for desktop users
+        function showDeepLinkModal(link, data) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('branchModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Create modal HTML
+            const modalHTML = `
+                <div id="branchModal" class="branch-modal">
+                    <div class="branch-modal-content">
+                        <button class="branch-modal-close" onclick="closeBranchModal()">&times;</button>
+                        <h2>Continue in the Sola Shopping App</h2>
+                        <p>Pick up where you left off — shop faster on mobile</p>
+                        
+                        <div class="branch-modal-options">
+                            <div class="branch-modal-qr">
+                                <div id="qrCodeContainer" class="qr-container">
+                                    <div class="qr-loading">Generating QR Code...<br><small>This may take a few seconds</small></div>
+                                </div>
+                                <p>Scan with your phone</p>
+                            </div>
+                            
+                            <div class="branch-modal-buttons">
+                                <button class="btn btn-primary" onclick="sendLinkViaSMS('${link}')">
+                                    Send Link via SMS
+                                </button>
+                                <button class="btn btn-secondary" onclick="copyLinkToClipboard('${link}')">
+                                    Copy Link
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="branch-modal-footer">
+                            <p>Continue your shopping experience on any device</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Generate QR code with timeout
+            generateQRCode(link, data);
+            
+            // Add timeout fallback
+            setTimeout(() => {
+                const qrContainer = document.getElementById('qrCodeContainer');
+                if (qrContainer && qrContainer.innerHTML.includes('Generating QR Code')) {
+                    console.log('QR code generation timed out, using fallback');
+                    generateFallbackQRCode(link, qrContainer);
+                }
+            }, 5000); // 5 second timeout
+            
+            // Add modal styles if not already present
+            if (!document.getElementById('branchModalStyles')) {
+                const styles = `
+                    <style id="branchModalStyles">
+                        .branch-modal {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0, 0, 0, 0.5);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 10000;
+                            animation: fadeIn 0.3s ease;
+                        }
+                        
+                        .branch-modal-content {
+                            background: white;
+                            border-radius: 8px;
+                            padding: 2rem;
+                            max-width: 600px;
+                            width: 90%;
+                            position: relative;
+                            animation: slideUp 0.3s ease;
+                        }
+                        
+                        .branch-modal-close {
+                            position: absolute;
+                            top: 1rem;
+                            right: 1rem;
+                            background: none;
+                            border: none;
+                            font-size: 2rem;
+                            cursor: pointer;
+                            color: #4b5563;
+                        }
+                        
+                        .branch-modal-content h2 {
+                            margin-bottom: 0.5rem;
+                            color: #274060;
+                        }
+                        
+                        .branch-modal-content p {
+                            color: #6b7280;
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .branch-modal-options {
+                            display: flex;
+                            gap: 2rem;
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .branch-modal-qr {
+                            text-align: center;
+                        }
+                        
+                        .qr-container {
+                            margin-bottom: 0.5rem;
+                            min-height: 200px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        
+                        .qr-loading {
+                            color: #6b7280;
+                            font-size: 0.875rem;
+                        }
+                        
+                        .qr-error {
+                            color: #ef4444;
+                            font-size: 0.875rem;
+                        }
+                        
+                        .qr-container img {
+                            border-radius: 8px;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                        }
+                        
+                        .branch-modal-buttons {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 1rem;
+                        }
+                        
+                        .branch-modal-stores {
+                            display: flex;
+                            gap: 1rem;
+                            margin-top: 1rem;
+                        }
+                        
+                        .store-badge img {
+                            height: 40px;
+                        }
+                        
+                        .branch-modal-footer {
+                            text-align: center;
+                            padding-top: 1rem;
+                            border-top: 1px solid #e5e7eb;
+                            color: #9ca3af;
+                            font-size: 0.875rem;
+                        }
+                        
+                        @keyframes fadeIn {
+                            from { opacity: 0; }
+                            to { opacity: 1; }
+                        }
+                        
+                        @keyframes slideUp {
+                            from {
+                                transform: translateY(20px);
+                                opacity: 0;
+                            }
+                            to {
+                                transform: translateY(0);
+                                opacity: 1;
+                            }
+                        }
+                    </style>
+                `;
+                document.head.insertAdjacentHTML('beforeend', styles);
+            }
+        }
+
+        // Close Branch modal
+        window.closeBranchModal = function() {
+            const modal = document.getElementById('branchModal');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+        // Send link via SMS
+        window.sendLinkViaSMS = function(link) {
+            // In a real implementation, this would use Twilio or similar
+            alert('We\'ll send this link to your phone:\n' + link);
+            
+            // Track event
+            if (typeof branch !== 'undefined') {
+                branch.logEvent('SHARE', {
+                    channel: 'sms',
+                    vertical: 'shopping',
+                    source_surface: 'web'
+                });
+            }
+        };
+
+        // Copy link to clipboard
+        window.copyLinkToClipboard = function(link) {
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copied to clipboard!');
+                
+                // Track event
+                if (typeof branch !== 'undefined') {
+                    branch.logEvent('SHARE', {
+                        channel: 'clipboard',
+                        vertical: 'shopping',
+                        source_surface: 'web'
+                    });
+                }
+            }).catch(err => {
+                console.error('Failed to copy link:', err);
+                alert('Failed to copy link. Please try again.');
+            });
+        };
+    </script>
+    
+    <script>
+        // Fallback link handling
+        function openFallbackLink(data) {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Try app scheme first, then fall back to store
+                const appScheme = 'solashopping://';
+                const params = new URLSearchParams(data).toString();
+                const deepLink = `${appScheme}?${params}`;
+                
+                // Try to open app
+                window.location.href = deepLink;
+                
+                // Fallback to store after delay
+                setTimeout(() => {
+                    if (isIOS) {
+                        window.location.href = APP_STORE_URL;
+                    } else {
+                        window.location.href = PLAY_STORE_URL;
+                    }
+                }, 2000);
+            } else {
+                // Desktop: Show download options
+                showDeepLinkModal('', data);
+            }
+        }
+
+        // Provide fallback links when Branch is not available
+        function provideFallbackLinks() {
+            console.log('Providing fallback deep linking functionality');
+            
+            // Override the createBranchLink function with fallback
+            window.createBranchLink = function(options) {
+                openFallbackLink(options.data || {});
+            };
+        }
+
+        // Utility functions
+        function highlightProduct(productId) {
+            // Highlight the product that was viewed in app
+            const productCard = document.querySelector(`[data-id="${productId}"]`);
+            if (productCard) {
+                productCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                productCard.style.animation = 'highlight 2s ease';
+                
+                // Add highlight animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes highlight {
+                        0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                        50% { box-shadow: 0 0 20px rgba(255, 84, 0, 0.5); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function syncCartFromApp(cartData) {
+            // Sync cart data from app
+            if (cartData && typeof cartData === 'string') {
+                try {
+                    const cart = JSON.parse(cartData);
+                    localStorage.setItem('solaShoppingCart', JSON.stringify(cart));
+                    
+                    // Reload cart UI if the function exists
+                    if (typeof window.loadCart === 'function') {
+                        window.loadCart();
+                    }
+                    
+                    // Show notification
+                    showSyncNotification('Cart synced from app');
+                } catch (err) {
+                    console.error('Failed to sync cart:', err);
+                }
+            }
+        }
+
+        function updateUserSession(userData) {
+            // Update user session from app authentication
+            if (userData) {
+                localStorage.setItem('solaUser', JSON.stringify(userData));
+                
+                // Update UI if elements exist
+                const userName = document.querySelector('.user-name');
+                if (userName && userData.name) {
+                    userName.textContent = userData.name;
+                }
+                
+                showSyncNotification('Logged in as ' + userData.name);
+            }
+        }
+
+        function showSyncNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 4px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Analytics tracking
+        if (typeof branch !== 'undefined') {
+            // Track commerce events for demo
+            window.trackCommerceEvent = function(eventName, eventData) {
+                branch.logEvent(eventName, {
+                    ...eventData,
+                    vertical: 'shopping',
+                    source_surface: 'web'
+                });
+            };
+        }
+
+        console.log('Branch integration loaded for Sola Shopping demo');
+    </script>
+
+    <script src="account.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
