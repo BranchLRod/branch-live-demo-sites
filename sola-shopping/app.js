@@ -1018,6 +1018,9 @@ document.addEventListener('DOMContentLoaded', () => {
             state.searchQuery = e.target.value;
             renderProducts();
         });
+        console.log('[SafeBind] Listener attached: searchInput');
+    } else {
+        console.warn('[SafeBind] Element not found: searchInput');
     }
 
     // Sort functionality
@@ -1027,6 +1030,9 @@ document.addEventListener('DOMContentLoaded', () => {
             state.sortBy = e.target.value;
             renderProducts();
         });
+        console.log('[SafeBind] Listener attached: sortSelect');
+    } else {
+        console.warn('[SafeBind] Element not found: sortSelect');
     }
 
     // Wishlist button
@@ -1036,6 +1042,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Wishlist clicked, handleWishlistClick available:', typeof handleWishlistClick);
             handleWishlistClick();
         });
+        console.log('[SafeBind] Listener attached: wishlistBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: wishlistBtn');
     }
 
     // User dropdown toggle
@@ -1053,6 +1062,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 userDropdown.classList.remove('active');
             }
         });
+        console.log('[SafeBind] Listener attached: userDropdownBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: userDropdownBtn or userDropdown');
     }
 
     // Category cards click handling
@@ -1117,35 +1129,79 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Cart toggle
-    document.getElementById('cartBtn').addEventListener('click', toggleCart);
-    document.getElementById('cartClose').addEventListener('click', toggleCart);
-    document.getElementById('cartOverlay').addEventListener('click', toggleCart);
-    
+    const cartBtn = document.getElementById('cartBtn');
+    const cartClose = document.getElementById('cartClose');
+    const cartOverlay = document.getElementById('cartOverlay');
+
+    if (cartBtn) {
+        cartBtn.addEventListener('click', toggleCart);
+        console.log('[SafeBind] Listener attached: cartBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: cartBtn');
+    }
+
+    if (cartClose) {
+        cartClose.addEventListener('click', toggleCart);
+        console.log('[SafeBind] Listener attached: cartClose');
+    } else {
+        console.warn('[SafeBind] Element not found: cartClose');
+    }
+
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', toggleCart);
+        console.log('[SafeBind] Listener attached: cartOverlay');
+    } else {
+        console.warn('[SafeBind] Element not found: cartOverlay');
+    }
+
     // Modal close
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('productModal').addEventListener('click', (e) => {
-        if (e.target.id === 'productModal') {
-            closeModal();
-        }
-    });
-    
+    const modalClose = document.getElementById('modalClose');
+    const productModal = document.getElementById('productModal');
+
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+        console.log('[SafeBind] Listener attached: modalClose');
+    } else {
+        console.warn('[SafeBind] Element not found: modalClose');
+    }
+
+    if (productModal) {
+        productModal.addEventListener('click', (e) => {
+            if (e.target.id === 'productModal') {
+                closeModal();
+            }
+        });
+        console.log('[SafeBind] Listener attached: productModal');
+    } else {
+        console.warn('[SafeBind] Element not found: productModal');
+    }
+
     // Mobile Menu Toggle
-    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-        const mobileBtn = document.getElementById('mobileMenuBtn');
-        const navMenu = document.getElementById('navMenu');
-        
-        mobileBtn.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            const navMenu = document.getElementById('navMenu');
+
+            if (navMenu) {
+                mobileMenuBtn.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            }
+        });
+        console.log('[SafeBind] Listener attached: mobileMenuBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: mobileMenuBtn');
+    }
 
     // Close mobile menu when clicking on nav links
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             const mobileBtn = document.getElementById('mobileMenuBtn');
             const navMenu = document.getElementById('navMenu');
-            
-            mobileBtn.classList.remove('active');
-            navMenu.classList.remove('active');
+
+            if (mobileBtn && navMenu) {
+                mobileBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
     });
 
@@ -1154,69 +1210,90 @@ document.addEventListener('DOMContentLoaded', () => {
         const mobileBtn = document.getElementById('mobileMenuBtn');
         const navMenu = document.getElementById('navMenu');
         const header = document.querySelector('.header');
-        
-        if (!header.contains(e.target) && navMenu.classList.contains('active')) {
+
+        if (header && mobileBtn && navMenu && !header.contains(e.target) && navMenu.classList.contains('active')) {
             mobileBtn.classList.remove('active');
             navMenu.classList.remove('active');
         }
     });
     
     // Shop Now button
-    document.getElementById('shopNowBtn').addEventListener('click', () => {
-        document.querySelector('.products').scrollIntoView({ behavior: 'smooth' });
-    });
-    
+    const shopNowBtn = document.getElementById('shopNowBtn');
+    if (shopNowBtn) {
+        shopNowBtn.addEventListener('click', () => {
+            const productsSection = document.querySelector('.products');
+            if (productsSection) {
+                productsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+        console.log('[SafeBind] Listener attached: shopNowBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: shopNowBtn');
+    }
+
     // View in App button (hero)
-    document.getElementById('viewInAppBtn').addEventListener('click', () => {
-        if (window.createBranchLink) {
-            window.createBranchLink({
-                feature: 'app_open',
-                channel: 'web',
-                campaign: 'sola_demo',
-                data: {
-                    vertical: 'shopping',
-                    page: 'home',
-                    user_id: state.user.id,
-                    user_name: state.user.name,
-                    cart: state.cart
-                }
-            });
-        }
-    });
-    
+    const viewInAppBtn = document.getElementById('viewInAppBtn');
+    if (viewInAppBtn) {
+        viewInAppBtn.addEventListener('click', () => {
+            if (window.createBranchLink) {
+                window.createBranchLink({
+                    feature: 'app_open',
+                    channel: 'web',
+                    campaign: 'sola_demo',
+                    data: {
+                        vertical: 'shopping',
+                        page: 'home',
+                        user_id: state.user.id,
+                        user_name: state.user.name,
+                        cart: state.cart
+                    }
+                });
+            }
+        });
+        console.log('[SafeBind] Listener attached: viewInAppBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: viewInAppBtn');
+    }
+
     // Checkout button - web checkout flow
-    document.getElementById('checkoutBtn').addEventListener('click', () => {
-        console.log('[Checkout] Proceed clicked');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            console.log('[Checkout] Proceed clicked');
 
-        if (state.cart.length === 0) {
-            showNotification('Your cart is empty');
-            return;
-        }
+            if (state.cart.length === 0) {
+                showNotification('Your cart is empty');
+                return;
+            }
 
-        // Update URL state for Branch Journeys targeting
-        URLStateManager.updateURL('checkout');
+            // Update URL state for Branch Journeys targeting
+            URLStateManager.updateURL('checkout');
 
-        console.log('[Checkout] Initiate purchase started');
+            console.log('[Checkout] Initiate purchase started');
 
-        // Track start checkout
-        if (window.solaBranch && window.solaBranch.trackStartCheckout) {
-            const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-            window.solaBranch.trackStartCheckout({
-                total: cartTotal,
-                itemCount: cartItemCount,
-                items: state.cart
-            });
-        }
+            // Track start checkout
+            if (window.solaBranch && window.solaBranch.trackStartCheckout) {
+                const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                window.solaBranch.trackStartCheckout({
+                    total: cartTotal,
+                    itemCount: cartItemCount,
+                    items: state.cart
+                });
+            }
 
-        // Use account-aware checkout if available
-        if (typeof handleCheckoutWithAuth === 'function') {
-            handleCheckoutWithAuth();
-        } else {
-            // Fallback to direct checkout
-            showCheckoutConfirmation();
-        }
-    });
+            // Use account-aware checkout if available
+            if (typeof handleCheckoutWithAuth === 'function') {
+                handleCheckoutWithAuth();
+            } else {
+                // Fallback to direct checkout
+                showCheckoutConfirmation();
+            }
+        });
+        console.log('[SafeBind] Listener attached: checkoutBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: checkoutBtn');
+    }
 
     // App CTAs removed - Branch Journeys will control app promotion
     // Preserved for reference: createBranchLink helper function available in branch-integration.js
@@ -1280,6 +1357,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 newsletterBtn.click();
             }
         });
+        console.log('[SafeBind] Listener attached: newsletterBtn');
+    } else {
+        console.warn('[SafeBind] Element not found: newsletterBtn or newsletterEmail');
     }
 
     // Initially hide gender filter if needed
