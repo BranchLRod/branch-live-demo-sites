@@ -518,9 +518,9 @@
                 // Setup Branch helper methods
                 setupBranchHelpers();
 
-                // Initialize Journey view data on page load
+                // Initialize Journey view data on page load (home view)
                 if (window.solaBranch && window.solaBranch.updateViewData) {
-                    window.solaBranch.updateViewData();
+                    window.solaBranch.updateViewData({ view: 'home' });
                 }
             } else {
                 console.warn('Branch SDK not loaded. Deep linking features will be limited.');
@@ -546,6 +546,55 @@
                 return eventData;
             }
 
+            // Helper to build view-specific Journey personalization fields
+            function getJourneyPersonalizationForView(view, context = {}) {
+                const personalization = {};
+
+                switch(view) {
+                    case 'product':
+                        if (context.product_name) {
+                            personalization['$journeys_title'] = 'Love the ' + context.product_name + '?';
+                            personalization['$journeys_description'] = 'Open it in the Sola app for a smoother checkout.';
+                            personalization.journey_context = 'product_intent';
+                            personalization.source_surface = 'product_page';
+                        }
+                        break;
+
+                    case 'cart':
+                        personalization['$journeys_title'] = 'Your cart is waiting';
+                        personalization['$journeys_description'] = 'Finish checkout faster in the Sola app.';
+                        personalization.journey_context = 'cart_intent';
+                        personalization.source_surface = 'cart_page';
+                        break;
+
+                    case 'checkout':
+                        personalization['$journeys_title'] = 'Ready to check out?';
+                        personalization['$journeys_description'] = 'Complete your order in the app for a smoother experience.';
+                        personalization.journey_context = 'checkout_intent';
+                        personalization.source_surface = 'checkout_page';
+                        break;
+
+                    case 'confirmation':
+                        personalization['$journeys_title'] = 'Track your order in the app';
+                        personalization['$journeys_description'] = 'Get updates and manage your purchase from Sola.';
+                        personalization.journey_context = 'post_purchase';
+                        personalization.source_surface = 'confirmation_page';
+                        break;
+
+                    case 'home':
+                    default:
+                        // No Journey personalization for home view
+                        // Explicitly set to null to clear any stale values
+                        personalization['$journeys_title'] = null;
+                        personalization['$journeys_description'] = null;
+                        personalization.journey_context = null;
+                        personalization.source_surface = 'home';
+                        break;
+                }
+
+                return personalization;
+            }
+
             // Helper to update Branch Journey view data for dynamic personalization
             window.solaBranch.updateViewData = function(updates = {}) {
                 if (typeof branch === 'undefined' || typeof branch.setBranchViewData !== 'function') {
@@ -558,6 +607,12 @@
 
                 // Get acquisition context
                 const firstTouch = window.solaAcquisition ? window.solaAcquisition.getFirstTouch() : null;
+
+                // Determine current view from URL or updates
+                const currentView = updates.view || (window.URLStateManager ? window.URLStateManager.getCurrentView() : 'home');
+
+                // Get view-specific Journey personalization
+                const journeyPersonalization = getJourneyPersonalizationForView(currentView, updates);
 
                 // Build view data object (safe - no PII)
                 const viewData = {
@@ -572,7 +627,10 @@
                     utm_medium: firstTouch && firstTouch.utm_medium ? firstTouch.utm_medium : null,
                     utm_channel: firstTouch && firstTouch.channel ? firstTouch.channel : null,
 
-                    // Override with any provided updates
+                    // Apply view-specific Journey personalization
+                    ...journeyPersonalization,
+
+                    // Override with any additional context-specific updates
                     ...updates
                 };
 
@@ -624,6 +682,39 @@
                 });
             };
 
+            // Helper to get user context for event metadata
+            function getUserContext() {
+                const user = window.getCurrentUser ? window.getCurrentUser() : null;
+                return {
+                    user_id: user && user.id ? user.id : null,
+                    logged_in_status: user ? 'logged_in' : 'guest',
+                    demo_account_created: user ? true : false,
+                    user_first_name: user && user.firstName ? user.firstName : null,
+                    company: user && user.company ? user.company : null
+                };
+            }
+
+            // Helper to serialize cart arrays for event metadata
+            function getCartSerialization(cart) {
+                if (!cart || !cart.items || cart.items.length === 0) {
+                    return {
+                        cart_product_ids: null,
+                        cart_product_names: null,
+                        cart_quantities: null
+                    };
+                }
+
+                const productIds = cart.items.map(item => item.id || '').join(',');
+                const productNames = cart.items.map(item => item.name || '').join(',');
+                const quantities = cart.items.map(item => item.quantity || 1).join(',');
+
+                return {
+                    cart_product_ids: productIds,
+                    cart_product_names: productNames,
+                    cart_quantities: quantities
+                };
+            }
+
             // Track view product
             window.solaBranch.trackViewProduct = function(product) {
                 console.log('[Branch] trackViewProduct called:', product.name);
@@ -633,18 +724,36 @@
                     return;
                 }
 
+                // Get user context
+                const userContext = getUserContext();
+
                 let eventData = {
+                    // Platform identifier
+                    source_surface: 'web',
+                    deep_link_path: '/product/' + product.id,
+
+                    // Product fields
                     product_id: product.id,
                     product_name: product.name,
                     category: product.category || '',
                     price: product.price,
-                    source_surface: 'web',
-                    placement: 'product_detail',
-                    deep_link_path: '/product/' + product.id
+
+                    // User/session fields
+                    user_id: userContext.user_id,
+                    logged_in_status: userContext.logged_in_status,
+                    user_first_name: userContext.user_first_name,
+                    company: userContext.company
                 };
 
                 // Enrich with acquisition context
                 eventData = enrichEventWithAcquisition(eventData);
+
+                // Remove null values
+                Object.keys(eventData).forEach(key => {
+                    if (eventData[key] === null || eventData[key] === undefined) {
+                        delete eventData[key];
+                    }
+                });
 
                 console.log('[Branch] Using branch.logEvent() for VIEW_ITEM');
                 branch.logEvent('VIEW_ITEM', eventData, function(err) {
@@ -657,6 +766,7 @@
 
                 // Update view data for Journey personalization
                 window.solaBranch.updateViewData({
+                    view: 'product',
                     product_id: product.id,
                     product_name: product.name,
                     product_price: product.price,
@@ -673,20 +783,48 @@
                     return;
                 }
 
+                // Get user context
+                const userContext = getUserContext();
+
+                // Get cart serialization
+                const cart = { items: cartData.items || [] };
+                const cartSerialization = getCartSerialization(cart);
+
                 let eventData = {
+                    // Platform identifier
+                    source_surface: 'web',
+                    deep_link_path: '/product/' + product.id,
+
+                    // Product fields
                     product_id: product.id,
                     product_name: product.name,
                     category: product.category || '',
                     price: product.price,
                     quantity: 1,
+
+                    // Cart fields
                     cart_value: cartData.total || 0,
                     cart_item_count: cartData.itemCount || 0,
-                    source_surface: 'web',
-                    deep_link_path: '/cart'
+                    cart_product_ids: cartSerialization.cart_product_ids,
+                    cart_product_names: cartSerialization.cart_product_names,
+                    cart_quantities: cartSerialization.cart_quantities,
+
+                    // User/session fields
+                    user_id: userContext.user_id,
+                    logged_in_status: userContext.logged_in_status,
+                    user_first_name: userContext.user_first_name,
+                    company: userContext.company
                 };
 
                 // Enrich with acquisition context
                 eventData = enrichEventWithAcquisition(eventData);
+
+                // Remove null values
+                Object.keys(eventData).forEach(key => {
+                    if (eventData[key] === null || eventData[key] === undefined) {
+                        delete eventData[key];
+                    }
+                });
 
                 console.log('[Branch] Using branch.logEvent() for ADD_TO_CART');
                 branch.logEvent('ADD_TO_CART', eventData, function(err) {
@@ -715,15 +853,41 @@
                     return;
                 }
 
+                // Get user context
+                const userContext = getUserContext();
+
+                // Get cart serialization
+                const cart = { items: cartData.items || [] };
+                const cartSerialization = getCartSerialization(cart);
+
                 let eventData = {
+                    // Platform identifier
+                    source_surface: 'web',
+                    deep_link_path: '/cart',
+
+                    // Cart fields
                     cart_value: cartData.total || 0,
                     cart_item_count: cartData.itemCount || 0,
-                    source_surface: 'web',
-                    deep_link_path: '/cart'
+                    cart_product_ids: cartSerialization.cart_product_ids,
+                    cart_product_names: cartSerialization.cart_product_names,
+                    cart_quantities: cartSerialization.cart_quantities,
+
+                    // User/session fields
+                    user_id: userContext.user_id,
+                    logged_in_status: userContext.logged_in_status,
+                    user_first_name: userContext.user_first_name,
+                    company: userContext.company
                 };
 
                 // Enrich with acquisition context
                 eventData = enrichEventWithAcquisition(eventData);
+
+                // Remove null values
+                Object.keys(eventData).forEach(key => {
+                    if (eventData[key] === null || eventData[key] === undefined) {
+                        delete eventData[key];
+                    }
+                });
 
                 console.log('[Branch] Using branch.logEvent() for VIEW_CART');
                 branch.logEvent('VIEW_CART', eventData, function(err) {
@@ -736,6 +900,7 @@
 
                 // Update view data for Journey personalization
                 window.solaBranch.updateViewData({
+                    view: 'cart',
                     cart_value: cartData.total || 0,
                     cart_items_count: cartData.itemCount || 0
                 });
@@ -750,15 +915,41 @@
                     return;
                 }
 
+                // Get user context
+                const userContext = getUserContext();
+
+                // Get cart serialization
+                const cart = { items: cartData.items || [] };
+                const cartSerialization = getCartSerialization(cart);
+
                 let eventData = {
+                    // Platform identifier
+                    source_surface: 'web',
+                    deep_link_path: '/checkout',
+
+                    // Cart fields
                     cart_value: cartData.total || 0,
                     cart_item_count: cartData.itemCount || 0,
-                    source_surface: 'web',
-                    deep_link_path: '/checkout'
+                    cart_product_ids: cartSerialization.cart_product_ids,
+                    cart_product_names: cartSerialization.cart_product_names,
+                    cart_quantities: cartSerialization.cart_quantities,
+
+                    // User/session fields
+                    user_id: userContext.user_id,
+                    logged_in_status: userContext.logged_in_status,
+                    user_first_name: userContext.user_first_name,
+                    company: userContext.company
                 };
 
                 // Enrich with acquisition context
                 eventData = enrichEventWithAcquisition(eventData);
+
+                // Remove null values
+                Object.keys(eventData).forEach(key => {
+                    if (eventData[key] === null || eventData[key] === undefined) {
+                        delete eventData[key];
+                    }
+                });
 
                 console.log('[Branch] Using branch.logEvent() for INITIATE_PURCHASE');
                 branch.logEvent('INITIATE_PURCHASE', eventData, function(err) {
@@ -779,6 +970,12 @@
                     return;
                 }
 
+                // Get user context
+                const userContext = getUserContext();
+
+                // Get cart serialization from orderData products
+                const cartSerialization = getCartSerialization({ items: orderData.products || [] });
+
                 // Build products array from cart
                 const products = (orderData.products || []).map(item => ({
                     product_id: item.id || '',
@@ -788,20 +985,39 @@
                 }));
 
                 let eventData = {
+                    // Platform identifier
+                    source_surface: 'web',
+                    deep_link_path: '/order/' + (orderData.orderId || 'confirmation'),
+
+                    // Purchase fields
                     order_id: orderData.orderId || '',
                     revenue: orderData.total || 0,
                     cart_value: orderData.subtotal || 0,
                     shipping: orderData.shipping || 0,
+                    currency: 'USD',
                     cart_item_count: orderData.itemCount || 0,
-                    products: products,
-                    source_surface: 'web',
-                    deep_link_path: '/order/' + (orderData.orderId || 'confirmation')
+                    products: JSON.stringify(products),
+
+                    // Cart serialization
+                    cart_product_ids: cartSerialization.cart_product_ids,
+
+                    // User/session fields
+                    user_id: userContext.user_id,
+                    logged_in_status: userContext.logged_in_status,
+                    user_first_name: userContext.user_first_name,
+                    company: userContext.company
                 };
 
                 // Enrich with acquisition context
                 eventData = enrichEventWithAcquisition(eventData);
 
-                console.log('[Branch] PURCHASE payload:', JSON.stringify(eventData, null, 2));
+                // Remove null values
+                Object.keys(eventData).forEach(key => {
+                    if (eventData[key] === null || eventData[key] === undefined) {
+                        delete eventData[key];
+                    }
+                });
+
                 console.log('[Branch] Using branch.logEvent() for PURCHASE');
                 branch.logEvent('PURCHASE', eventData, function(err) {
                     if (err) {

@@ -666,7 +666,8 @@ function addToCart(productId) {
         const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
         window.solaBranch.trackAddToCart(product, {
             total: cartTotal,
-            itemCount: cartItemCount
+            itemCount: cartItemCount,
+            items: state.cart
         });
     }
 }
@@ -793,7 +794,8 @@ function toggleCart() {
             const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             window.solaBranch.trackViewCart({
                 total: cartTotal,
-                itemCount: cartItemCount
+                itemCount: cartItemCount,
+                items: state.cart
             });
         }
     }
@@ -1192,7 +1194,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             window.solaBranch.trackStartCheckout({
                 total: cartTotal,
-                itemCount: cartItemCount
+                itemCount: cartItemCount,
+                items: state.cart
             });
         }
 
