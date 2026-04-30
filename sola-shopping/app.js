@@ -803,6 +803,8 @@ function toggleCart() {
 
 // Checkout Confirmation
 function showCheckoutConfirmation() {
+    console.log('[Checkout] Purchase completed');
+
     const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const shipping = total >= 50 ? 0 : 5.99;
     const finalTotal = total + shipping;
@@ -845,6 +847,9 @@ function showCheckoutConfirmation() {
     const modal = document.getElementById('productModal');
     const modalBody = document.getElementById('modalBody');
 
+    // Get user email safely
+    const userEmail = (state.user && state.user.email) ? state.user.email : 'your email';
+
     modalBody.innerHTML = `
         <div class="checkout-confirmation">
             <div class="confirmation-icon">
@@ -871,7 +876,7 @@ function showCheckoutConfirmation() {
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                         <polyline points="22,6 12,13 2,6"></polyline>
                     </svg>
-                    <span>Confirmation email sent to ${state.user.email}</span>
+                    <span>Confirmation email sent to ${userEmail}</span>
                 </div>
                 <div class="info-row">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -897,6 +902,7 @@ function showCheckoutConfirmation() {
         </div>
     `;
 
+    console.log('[Checkout] Confirmation shown');
     modal.classList.add('active');
 }
 
@@ -1180,6 +1186,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Checkout button - web checkout flow
     document.getElementById('checkoutBtn').addEventListener('click', () => {
+        console.log('[Checkout] Proceed clicked');
+
         if (state.cart.length === 0) {
             showNotification('Your cart is empty');
             return;
@@ -1187,6 +1195,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update URL state for Branch Journeys targeting
         URLStateManager.updateURL('checkout');
+
+        console.log('[Checkout] Initiate purchase started');
 
         // Track start checkout
         if (window.solaBranch && window.solaBranch.trackStartCheckout) {
