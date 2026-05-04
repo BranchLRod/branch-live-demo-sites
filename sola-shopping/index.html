@@ -552,12 +552,22 @@
 
                 switch(view) {
                     case 'product':
-                        if (context.product_name) {
-                            personalization['$journeys_title'] = 'Love the ' + context.product_name + '?';
-                            personalization['$journeys_description'] = 'Open it in the Sola app for a smoother checkout.';
-                            personalization.journey_context = 'product_intent';
-                            personalization.source_surface = 'product_page';
-                        }
+                        // Get user context for personalization
+                        const user = window.getCurrentUser ? window.getCurrentUser() : null;
+                        const firstName = user && user.firstName ? user.firstName : null;
+
+                        // Build personalized title with user's first name if available
+                        personalization['$journeys_title'] = firstName
+                            ? firstName + ', love what you found?'
+                            : 'Love what you found?';
+
+                        // Build personalized description with product name if available
+                        personalization['$journeys_description'] = context.product_name
+                            ? 'Check out ' + context.product_name + ' in the Sola app for a smoother checkout.'
+                            : 'Open it in the Sola app for a smoother checkout.';
+
+                        personalization.journey_context = 'product_intent';
+                        personalization.source_surface = 'product_page';
                         break;
 
                     case 'cart':
@@ -764,34 +774,16 @@
                     }
                 });
 
-                // Update view data for Journey personalization with runtime custom fields
-                // Reuse userContext from line 728
-                const firstName = userContext.user_first_name;
-
-                // Build personalized title
-                const customTitle = firstName
-                    ? firstName + ', love what you found?'
-                    : 'Love what you found?';
-
-                // Build personalized description
-                const customDescription = product.name
-                    ? 'Check out ' + product.name + ' in the Sola app for a smoother checkout.'
-                    : 'Open it in the Sola app for a smoother checkout.';
-
+                // Update view data for Journey personalization
                 window.solaBranch.updateViewData({
                     view: 'product',
                     product_id: product.id,
                     product_name: product.name,
                     product_price: product.price,
-                    product_category: product.category || '',
-                    custom_title: customTitle,
-                    custom_description: customDescription
+                    product_category: product.category || ''
                 });
 
-                console.log('[Branch] Product Journey personalization updated:', {
-                    custom_title: customTitle,
-                    custom_description: customDescription
-                });
+                console.log('[Branch] Product Journey override applied');
             };
 
             // Track add to cart
