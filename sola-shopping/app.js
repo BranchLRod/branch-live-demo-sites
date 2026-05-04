@@ -54,22 +54,21 @@ const URLStateManager = {
 
         console.log('[Journeys] Branch SDK available: true');
 
-        // Track the navigation as a pageview to trigger Journey re-evaluation
-        const trackData = {
-            page: view || 'home',
-            vertical: 'shopping',
-            url: window.location.href
-        };
+        // Journey re-evaluation is now handled by closeJourney/track in showProductModal
+        // This method just updates URL state for non-product views
+        if (view !== 'product') {
+            const trackData = {
+                page: view || 'home',
+                vertical: 'shopping',
+                url: window.location.href
+            };
 
-        // Add specific params for context
-        if (params.product_id) trackData.product_id = params.product_id;
-        if (params.order_id) trackData.order_id = params.order_id;
+            // Add specific params for context
+            if (params.order_id) trackData.order_id = params.order_id;
 
-        // Delay Journey re-evaluation to allow setBranchViewData to complete first
-        setTimeout(() => {
-            console.log('[Journeys] Re-evaluating AFTER personalization');
             branch.track('pageview', trackData);
-        }, 150);
+            console.log('[Journeys] Re-evaluation for non-product view');
+        }
     },
 
     getCurrentView() {
@@ -423,9 +422,22 @@ function showProductModal(productId) {
     if (window.solaBranch && window.solaBranch.trackViewProduct) {
         console.log('[Branch] Setting Journey data BEFORE render');
         window.solaBranch.trackViewProduct(product);
+
+        // Force Journey re-render after setBranchViewData
+        if (typeof branch !== 'undefined' && typeof branch.closeJourney === 'function') {
+            console.log('[Branch] Forcing Journey re-render');
+
+            branch.closeJourney(function() {
+                console.log('[Branch] Journey closed, re-triggering');
+
+                setTimeout(() => {
+                    branch.track('pageview');
+                }, 100);
+            });
+        }
     }
 
-    // Update URL state for Branch Journeys targeting (triggers Journey re-evaluation after delay)
+    // Update URL state for Branch Journeys targeting
     URLStateManager.updateURL('product', { product_id: productId });
 
     // Get enhanced product info
