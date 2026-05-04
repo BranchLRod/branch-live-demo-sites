@@ -40,6 +40,33 @@ const URLStateManager = {
         window.history.pushState({ view, ...params }, '', url.toString());
 
         console.log('[URL] State updated:', view, params);
+        console.log('[Journeys] URL state changed:', view);
+
+        // Notify Branch of the navigation for Journey re-evaluation
+        this.notifyBranchNavigation(view, params);
+    },
+
+    notifyBranchNavigation(view, params) {
+        if (typeof branch === 'undefined') {
+            console.log('[Journeys] Branch SDK available: false');
+            return;
+        }
+
+        console.log('[Journeys] Branch SDK available: true');
+
+        // Track the navigation as a pageview to trigger Journey re-evaluation
+        const trackData = {
+            page: view || 'home',
+            vertical: 'shopping',
+            url: window.location.href
+        };
+
+        // Add specific params for context
+        if (params.product_id) trackData.product_id = params.product_id;
+        if (params.order_id) trackData.order_id = params.order_id;
+
+        branch.track('pageview', trackData);
+        console.log('[Journeys] Re-evaluation attempted: branch.track(pageview)');
     },
 
     getCurrentView() {
