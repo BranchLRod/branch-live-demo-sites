@@ -21,6 +21,155 @@ async function testSupabaseWrite() {
     console.log('[Supabase] Test write succeeded', { user_id: data.id });
 }
 
+// Supabase Cart Persistence Helpers
+
+// Get SOLA lead profile payload
+function getSolaLeadProfilePayload() {
+    try {
+        const savedProfile = localStorage.getItem('sola_lead_profile');
+        if (savedProfile) {
+            return JSON.parse(savedProfile);
+        }
+    } catch (err) {
+        // Ignore parse errors
+    }
+    return null;
+}
+
+// Get or create Supabase user based on SOLA profile
+async function getOrCreateSupabaseUser() {
+    // Check for cached Supabase user ID
+    const cachedUserId = localStorage.getItem('sola_supabase_user_id');
+    if (cachedUserId) {
+        return cachedUserId;
+    }
+
+    // Get SOLA profile
+    const profile = getSolaLeadProfilePayload();
+    if (!profile || !profile.email) {
+        return null;
+    }
+
+    // Look up existing user by email
+    const { data: existingUsers, error: lookupError } = await solaSupabase
+        .from('users')
+        .select('id')
+        .eq('email', profile.email)
+        .limit(1);
+
+    if (!lookupError && existingUsers && existingUsers.length > 0) {
+        const userId = existingUsers[0].id;
+        localStorage.setItem('sola_supabase_user_id', userId);
+        console.log('[Supabase] User ready');
+        return userId;
+    }
+
+    // Create new user
+    const { data: newUser, error: insertError } = await solaSupabase
+        .from('users')
+        .insert([{ email: profile.email }])
+        .select()
+        .single();
+
+    if (insertError || !newUser) {
+        console.warn('[Supabase] User creation failed');
+        return null;
+    }
+
+    localStorage.setItem('sola_supabase_user_id', newUser.id);
+    console.log('[Supabase] User ready');
+    return newUser.id;
+}
+
+// Get or create cart for user
+async function getOrCreateSupabaseCart(userId) {
+    if (!userId) return null;
+
+    // Check for cached cart ID
+    const cachedCartId = localStorage.getItem('sola_supabase_cart_id');
+    if (cachedCartId) {
+        return cachedCartId;
+    }
+
+    // Look up existing cart for user
+    const { data: existingCarts, error: lookupError } = await solaSupabase
+        .from('carts')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1);
+
+    if (!lookupError && existingCarts && existingCarts.length > 0) {
+        const cartId = existingCarts[0].id;
+        localStorage.setItem('sola_supabase_cart_id', cartId);
+        console.log('[Supabase] Cart ready');
+        return cartId;
+    }
+
+    // Create new cart
+    const { data: newCart, error: insertError } = await solaSupabase
+        .from('carts')
+        .insert([{ user_id: userId }])
+        .select()
+        .single();
+
+    if (insertError || !newCart) {
+        console.warn('[Supabase] Cart creation failed');
+        return null;
+    }
+
+    localStorage.setItem('sola_supabase_cart_id', newCart.id);
+    console.log('[Supabase] Cart ready');
+    return newCart.id;
+}
+
+// Persist current cart to Supabase
+async function persistCartToSupabase() {
+    // Skip if cart is empty
+    if (state.cart.length === 0) {
+        console.log('[Supabase] Cart persist skipped: empty cart');
+        return;
+    }
+
+    // Get or create user and cart
+    const userId = await getOrCreateSupabaseUser();
+    if (!userId) return;
+
+    const cartId = await getOrCreateSupabaseCart(userId);
+    if (!cartId) return;
+
+    // Delete existing cart items
+    await solaSupabase
+        .from('cart_items')
+        .delete()
+        .eq('cart_id', cartId);
+
+    // Insert current cart items
+    const cartItems = state.cart.map(item => ({
+        cart_id: cartId,
+        product_id: item.id,
+        product_name: item.name,
+        price: item.price,
+        quantity: item.quantity
+    }));
+
+    const { error: insertError } = await solaSupabase
+        .from('cart_items')
+        .insert(cartItems);
+
+    if (insertError) {
+        console.warn('[Supabase] Cart items insert failed');
+        return;
+    }
+
+    // Update cart timestamp
+    await solaSupabase
+        .from('carts')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', cartId);
+
+    console.log('[Supabase] Cart persisted');
+}
+
 // State Management
 const state = {
     products: [],
@@ -722,6 +871,9 @@ function loadCart() {
 function saveCart() {
     localStorage.setItem('solaShoppingCart', JSON.stringify(state.cart));
     updateCartUI();
+
+    // Persist cart to Supabase
+    persistCartToSupabase();
 }
 
 function addToCart(productId) {

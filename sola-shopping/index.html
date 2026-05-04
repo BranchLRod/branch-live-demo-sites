@@ -559,6 +559,10 @@
                         const user = window.getCurrentUser ? window.getCurrentUser() : null;
                         const firstName = user && user.firstName ? user.firstName : null;
 
+                        // Get Supabase IDs from localStorage
+                        const productSupabaseUserId = localStorage.getItem('sola_supabase_user_id');
+                        const productSupabaseCartId = localStorage.getItem('sola_supabase_cart_id');
+
                         // Build personalized title with user's first name if available
                         personalization['$journeys_title'] = firstName
                             ? firstName + ', love what you found?'
@@ -571,13 +575,44 @@
 
                         personalization.journey_context = 'product_intent';
                         personalization.source_surface = 'product_page';
+                        if (productSupabaseUserId) personalization.supabase_user_id = productSupabaseUserId;
+                        if (productSupabaseCartId) personalization.supabase_cart_id = productSupabaseCartId;
                         break;
 
                     case 'cart':
-                        personalization['$journeys_title'] = 'Your cart is waiting';
-                        personalization['$journeys_description'] = 'Finish checkout faster in the Sola app.';
+                        // Get user context for personalization
+                        const cartUser = window.getCurrentUser ? window.getCurrentUser() : null;
+                        const cartFirstName = cartUser && cartUser.firstName ? cartUser.firstName : null;
+
+                        // Get cart data from window state
+                        const cartItems = window.state && window.state.cart ? window.state.cart : [];
+                        const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+                        const cartValue = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                        const primaryProduct = cartItems.length > 0 ? cartItems[0].name : null;
+
+                        // Get Supabase IDs from localStorage
+                        const supabaseUserId = localStorage.getItem('sola_supabase_user_id');
+                        const supabaseCartId = localStorage.getItem('sola_supabase_cart_id');
+
+                        // Build personalized title
+                        personalization['$journeys_title'] = cartFirstName
+                            ? cartFirstName + ', your cart is ready'
+                            : 'Your cart is ready';
+
+                        // Build personalized description
+                        if (cartCount > 0 && cartValue > 0) {
+                            personalization['$journeys_description'] = cartCount + ' items waiting — complete your $' + cartValue.toFixed(2) + ' purchase in the Sola app';
+                        } else {
+                            personalization['$journeys_description'] = 'Complete your purchase faster in the Sola app';
+                        }
+
                         personalization.journey_context = 'cart_intent';
                         personalization.source_surface = 'cart_page';
+                        personalization.cart_value = cartValue.toFixed(2);
+                        personalization.cart_count = cartCount;
+                        if (primaryProduct) personalization.primary_product = primaryProduct;
+                        if (supabaseUserId) personalization.supabase_user_id = supabaseUserId;
+                        if (supabaseCartId) personalization.supabase_cart_id = supabaseCartId;
                         break;
 
                     case 'checkout':
