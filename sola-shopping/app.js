@@ -124,6 +124,8 @@ async function getOrCreateSupabaseCart(userId) {
 
 // Persist current cart to Supabase
 async function persistCartToSupabase() {
+    console.log('[Supabase] persistCartToSupabase called');
+
     // Skip if cart is empty
     if (state.cart.length === 0) {
         console.log('[Supabase] Cart persist skipped: empty cart');
@@ -871,9 +873,6 @@ function loadCart() {
 function saveCart() {
     localStorage.setItem('solaShoppingCart', JSON.stringify(state.cart));
     updateCartUI();
-
-    // Persist cart to Supabase
-    persistCartToSupabase();
 }
 
 function addToCart(productId) {
@@ -894,6 +893,10 @@ function addToCart(productId) {
     saveCart();
     showNotification(`${product.name} added to cart!`);
 
+    // Persist cart to Supabase
+    console.log('[Supabase] Persist requested: add_to_cart');
+    persistCartToSupabase().catch(err => console.warn('[Supabase] Cart persist failed', err.message));
+
     // Track add to cart
     if (window.solaBranch && window.solaBranch.trackAddToCart) {
         const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -909,18 +912,26 @@ function addToCart(productId) {
 function removeFromCart(productId) {
     state.cart = state.cart.filter(item => item.id !== productId);
     saveCart();
+
+    // Persist cart to Supabase
+    console.log('[Supabase] Persist requested: remove_item');
+    persistCartToSupabase().catch(err => console.warn('[Supabase] Cart persist failed', err.message));
 }
 
 function updateQuantity(productId, change) {
     const item = state.cart.find(item => item.id === productId);
     if (!item) return;
-    
+
     item.quantity += change;
-    
+
     if (item.quantity <= 0) {
         removeFromCart(productId);
     } else {
         saveCart();
+
+        // Persist cart to Supabase
+        console.log('[Supabase] Persist requested: quantity_change');
+        persistCartToSupabase().catch(err => console.warn('[Supabase] Cart persist failed', err.message));
     }
 }
 
@@ -1023,6 +1034,10 @@ function toggleCart() {
 
     // Track view cart when opening
     if (!wasActive && sidebar.classList.contains('active')) {
+        // Persist cart to Supabase as fallback
+        console.log('[Supabase] Persist requested: cart_open');
+        persistCartToSupabase().catch(err => console.warn('[Supabase] Cart persist failed', err.message));
+
         if (window.solaBranch && window.solaBranch.trackViewCart) {
             const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -1144,6 +1159,10 @@ function showCheckoutConfirmation() {
 function clearCart() {
     state.cart = [];
     saveCart();
+
+    // Persist empty cart to Supabase
+    console.log('[Supabase] Persist requested: clear_cart');
+    persistCartToSupabase().catch(err => console.warn('[Supabase] Cart persist failed', err.message));
 }
 
 // View order in app
