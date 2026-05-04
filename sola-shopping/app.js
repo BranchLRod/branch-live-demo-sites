@@ -3,7 +3,19 @@
 // Supabase Configuration
 const SOLA_SUPABASE_URL = 'https://ocqizpxizzqpthhlqsgt.supabase.co';
 const SOLA_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_KgaM819n-HNthgoFXhSbGA_ePO6M3qI';
-const solaSupabase = window.supabase.createClient(SOLA_SUPABASE_URL, SOLA_SUPABASE_PUBLISHABLE_KEY);
+
+// Check if Supabase SDK is available
+if (typeof window.supabase === 'undefined') {
+    console.error('[Supabase] SDK not loaded - check script tag in index.html');
+}
+
+const solaSupabase = window.supabase ? window.supabase.createClient(SOLA_SUPABASE_URL, SOLA_SUPABASE_PUBLISHABLE_KEY) : null;
+
+if (solaSupabase) {
+    console.log('[Supabase] Client initialized');
+} else {
+    console.error('[Supabase] Client initialization failed');
+}
 
 // Temporary test function for Supabase connectivity
 async function testSupabaseWrite() {
@@ -41,43 +53,46 @@ async function getOrCreateSupabaseUser() {
     // Check for cached Supabase user ID
     const cachedUserId = localStorage.getItem('sola_supabase_user_id');
     if (cachedUserId) {
+        console.log('[Supabase] User ready (cached)');
         return cachedUserId;
     }
 
-    // Get SOLA profile
+    // Get SOLA profile or use fallback demo email
     const profile = getSolaLeadProfilePayload();
-    if (!profile || !profile.email) {
-        return null;
-    }
+    const userEmail = (profile && profile.email) ? profile.email : 'demo@sola.local';
+
+    console.log('[Supabase] Looking up user');
 
     // Look up existing user by email
     const { data: existingUsers, error: lookupError } = await solaSupabase
         .from('users')
         .select('id')
-        .eq('email', profile.email)
+        .eq('email', userEmail)
         .limit(1);
 
     if (!lookupError && existingUsers && existingUsers.length > 0) {
         const userId = existingUsers[0].id;
         localStorage.setItem('sola_supabase_user_id', userId);
-        console.log('[Supabase] User ready');
+        console.log('[Supabase] User ready (existing)');
         return userId;
     }
+
+    console.log('[Supabase] Creating new user');
 
     // Create new user
     const { data: newUser, error: insertError } = await solaSupabase
         .from('users')
-        .insert([{ email: profile.email }])
+        .insert([{ email: userEmail }])
         .select()
         .single();
 
     if (insertError || !newUser) {
-        console.warn('[Supabase] User creation failed');
+        console.warn('[Supabase] User creation failed', insertError?.message);
         return null;
     }
 
     localStorage.setItem('sola_supabase_user_id', newUser.id);
-    console.log('[Supabase] User ready');
+    console.log('[Supabase] User ready (created)');
     return newUser.id;
 }
 
@@ -126,6 +141,15 @@ async function getOrCreateSupabaseCart(userId) {
 async function persistCartToSupabase() {
     console.log('[Supabase] persistCartToSupabase called');
 
+    // Check if Supabase client is available
+    if (!solaSupabase) {
+        console.warn('[Supabase] Client not initialized');
+        return;
+    }
+
+    // Log current cart count
+    console.log('[Supabase] current cart count:', state.cart.length);
+
     // Skip if cart is empty
     if (state.cart.length === 0) {
         console.log('[Supabase] Cart persist skipped: empty cart');
@@ -134,10 +158,16 @@ async function persistCartToSupabase() {
 
     // Get or create user and cart
     const userId = await getOrCreateSupabaseUser();
-    if (!userId) return;
+    if (!userId) {
+        console.warn('[Supabase] Failed to get user ID');
+        return;
+    }
 
     const cartId = await getOrCreateSupabaseCart(userId);
-    if (!cartId) return;
+    if (!cartId) {
+        console.warn('[Supabase] Failed to get cart ID');
+        return;
+    }
 
     // Delete existing cart items
     await solaSupabase
@@ -159,7 +189,7 @@ async function persistCartToSupabase() {
         .insert(cartItems);
 
     if (insertError) {
-        console.warn('[Supabase] Cart items insert failed');
+        console.warn('[Supabase] Cart items insert failed', insertError.message);
         return;
     }
 
@@ -1230,6 +1260,13 @@ function viewProductInApp(productId) {
         });
     }
 }
+
+// Debug function for manual cart persistence testing
+window.debugPersistSolaCart = async function () {
+    console.log('[Supabase] Manual debug persist started');
+    await persistCartToSupabase();
+    console.log('[Supabase] Manual debug persist finished');
+};
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
