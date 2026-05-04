@@ -65,8 +65,11 @@ const URLStateManager = {
         if (params.product_id) trackData.product_id = params.product_id;
         if (params.order_id) trackData.order_id = params.order_id;
 
-        branch.track('pageview', trackData);
-        console.log('[Journeys] Re-evaluation attempted: branch.track(pageview)');
+        // Delay Journey re-evaluation to allow setBranchViewData to complete first
+        setTimeout(() => {
+            console.log('[Journeys] Re-evaluating AFTER personalization');
+            branch.track('pageview', trackData);
+        }, 150);
     },
 
     getCurrentView() {
@@ -403,9 +406,6 @@ function showProductModal(productId) {
     const product = state.products.find(p => p.id === productId);
     if (!product) return;
 
-    // Update URL state for Branch Journeys targeting
-    URLStateManager.updateURL('product', { product_id: productId });
-
     // Store last viewed product for lead profile
     try {
         localStorage.setItem('sola_last_viewed_product', JSON.stringify({
@@ -419,10 +419,14 @@ function showProductModal(productId) {
         // Ignore storage errors
     }
 
-    // Track product view
+    // Track product view and set Branch Journey data BEFORE URL update
     if (window.solaBranch && window.solaBranch.trackViewProduct) {
+        console.log('[Branch] Setting Journey data BEFORE render');
         window.solaBranch.trackViewProduct(product);
     }
+
+    // Update URL state for Branch Journeys targeting (triggers Journey re-evaluation after delay)
+    URLStateManager.updateURL('product', { product_id: productId });
 
     // Get enhanced product info
     const stockStatus = getStockStatus(product);
