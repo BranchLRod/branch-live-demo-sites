@@ -37,6 +37,20 @@ async function testSupabaseWrite() {
 
 // Get SOLA lead profile payload
 function getSolaLeadProfilePayload() {
+    // Try primary profile key (solaUser from account.js)
+    try {
+        const savedUser = localStorage.getItem('solaUser');
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+            if (user && user.email) {
+                return user;
+            }
+        }
+    } catch (err) {
+        // Ignore parse errors
+    }
+
+    // Fallback to legacy key
     try {
         const savedProfile = localStorage.getItem('sola_lead_profile');
         if (savedProfile) {
@@ -45,21 +59,39 @@ function getSolaLeadProfilePayload() {
     } catch (err) {
         // Ignore parse errors
     }
+
     return null;
 }
 
 // Get or create Supabase user based on SOLA profile
 async function getOrCreateSupabaseUser() {
-    // Check for cached Supabase user ID
+    // Get SOLA profile or use fallback demo email
+    const profile = getSolaLeadProfilePayload();
+    const userEmail = (profile && profile.email) ? profile.email : 'demo@sola.local';
+
+    // Log email source without logging actual email
+    if (profile && profile.email) {
+        console.log('[Supabase] Profile email source: saved_profile');
+    } else {
+        console.log('[Supabase] Profile email source: fallback');
+    }
+
+    // Check for cached Supabase user ID, but verify it matches current email
     const cachedUserId = localStorage.getItem('sola_supabase_user_id');
-    if (cachedUserId) {
+    const cachedEmail = localStorage.getItem('sola_supabase_cached_email');
+
+    if (cachedUserId && cachedEmail === userEmail) {
         console.log('[Supabase] User ready (cached)');
         return cachedUserId;
     }
 
-    // Get SOLA profile or use fallback demo email
-    const profile = getSolaLeadProfilePayload();
-    const userEmail = (profile && profile.email) ? profile.email : 'demo@sola.local';
+    // If cached but email changed, clear cache
+    if (cachedUserId && cachedEmail && cachedEmail !== userEmail) {
+        console.log('[Supabase] Email changed, clearing cache');
+        localStorage.removeItem('sola_supabase_user_id');
+        localStorage.removeItem('sola_supabase_cart_id');
+        localStorage.removeItem('sola_supabase_cached_email');
+    }
 
     console.log('[Supabase] Looking up user');
 
@@ -73,6 +105,7 @@ async function getOrCreateSupabaseUser() {
     if (!lookupError && existingUsers && existingUsers.length > 0) {
         const userId = existingUsers[0].id;
         localStorage.setItem('sola_supabase_user_id', userId);
+        localStorage.setItem('sola_supabase_cached_email', userEmail);
         console.log('[Supabase] User ready (existing)');
         return userId;
     }
@@ -92,6 +125,7 @@ async function getOrCreateSupabaseUser() {
     }
 
     localStorage.setItem('sola_supabase_user_id', newUser.id);
+    localStorage.setItem('sola_supabase_cached_email', userEmail);
     console.log('[Supabase] User ready (created)');
     return newUser.id;
 }
