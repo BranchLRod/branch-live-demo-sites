@@ -764,13 +764,33 @@
                     }
                 });
 
-                // Update view data for Journey personalization
+                // Update view data for Journey personalization with runtime custom fields
+                const userContext = getUserContext();
+                const firstName = userContext.user_first_name;
+
+                // Build personalized title
+                const customTitle = firstName
+                    ? firstName + ', love what you found?'
+                    : 'Love what you found?';
+
+                // Build personalized description
+                const customDescription = product.name
+                    ? 'Check out ' + product.name + ' in the Sola app for a smoother checkout.'
+                    : 'Open it in the Sola app for a smoother checkout.';
+
                 window.solaBranch.updateViewData({
                     view: 'product',
                     product_id: product.id,
                     product_name: product.name,
                     product_price: product.price,
-                    product_category: product.category || ''
+                    product_category: product.category || '',
+                    custom_title: customTitle,
+                    custom_description: customDescription
+                });
+
+                console.log('[Branch] Product Journey personalization updated:', {
+                    custom_title: customTitle,
+                    custom_description: customDescription
                 });
             };
 
