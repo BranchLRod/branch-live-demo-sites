@@ -76,12 +76,37 @@ async function getOrCreateSupabaseUser() {
         console.log('[Supabase] Profile email source: fallback');
     }
 
+    // Build prospect fields from profile
+    const prospectFields = {
+        email: userEmail,
+        first_name: profile?.firstName || null,
+        last_name: profile?.lastName || null,
+        phone: profile?.phone || null,
+        company: profile?.company || null,
+        source_surface: 'web',
+        branch_identity_id: profile?.id || null,
+        last_seen_at: new Date().toISOString()
+    };
+
     // Check for cached Supabase user ID, but verify it matches current email
     const cachedUserId = localStorage.getItem('sola_supabase_user_id');
     const cachedEmail = localStorage.getItem('sola_supabase_cached_email');
 
     if (cachedUserId && cachedEmail === userEmail) {
+        // Update last_seen_at for cached user
+        await solaSupabase
+            .from('users')
+            .update({
+                last_seen_at: new Date().toISOString(),
+                first_name: prospectFields.first_name,
+                last_name: prospectFields.last_name,
+                phone: prospectFields.phone,
+                company: prospectFields.company
+            })
+            .eq('id', cachedUserId);
+
         console.log('[Supabase] User ready (cached)');
+        console.log('[Supabase] Profile upserted');
         return cachedUserId;
     }
 
@@ -102,8 +127,25 @@ async function getOrCreateSupabaseUser() {
         .eq('email', userEmail)
         .limit(1);
 
+    if (lookupError) {
+        console.warn('[Supabase] User lookup failed', lookupError.message);
+    }
+
     if (!lookupError && existingUsers && existingUsers.length > 0) {
         const userId = existingUsers[0].id;
+
+        // Update existing user with latest profile data
+        const { error: updateError } = await solaSupabase
+            .from('users')
+            .update(prospectFields)
+            .eq('id', userId);
+
+        if (updateError) {
+            console.warn('[Supabase] Profile update failed', updateError.message);
+        } else {
+            console.log('[Supabase] Profile upserted');
+        }
+
         localStorage.setItem('sola_supabase_user_id', userId);
         localStorage.setItem('sola_supabase_cached_email', userEmail);
         console.log('[Supabase] User ready (existing)');
@@ -112,33 +154,45 @@ async function getOrCreateSupabaseUser() {
 
     console.log('[Supabase] Creating new user');
 
-    // Create new user
+    // Create new user with prospect fields
     const { data: newUser, error: insertError } = await solaSupabase
         .from('users')
-        .insert([{ email: userEmail }])
+        .insert([prospectFields])
         .select()
         .single();
 
-    if (insertError || !newUser) {
-        console.warn('[Supabase] User creation failed', insertError?.message);
+    if (insertError) {
+        console.warn('[Supabase] User creation failed', insertError.message);
+        return null;
+    }
+
+    if (!newUser) {
+        console.warn('[Supabase] User creation failed: no data returned');
         return null;
     }
 
     localStorage.setItem('sola_supabase_user_id', newUser.id);
     localStorage.setItem('sola_supabase_cached_email', userEmail);
     console.log('[Supabase] User ready (created)');
+    console.log('[Supabase] Profile upserted');
     return newUser.id;
 }
 
 // Get or create cart for user
 async function getOrCreateSupabaseCart(userId) {
-    if (!userId) return null;
+    if (!userId) {
+        console.warn('[Supabase] Cannot create cart: no user ID');
+        return null;
+    }
 
     // Check for cached cart ID
     const cachedCartId = localStorage.getItem('sola_supabase_cart_id');
     if (cachedCartId) {
+        console.log('[Supabase] Cart ready (cached)');
         return cachedCartId;
     }
+
+    console.log('[Supabase] Looking up cart for user');
 
     // Look up existing cart for user
     const { data: existingCarts, error: lookupError } = await solaSupabase
@@ -147,12 +201,20 @@ async function getOrCreateSupabaseCart(userId) {
         .eq('user_id', userId)
         .limit(1);
 
-    if (!lookupError && existingCarts && existingCarts.length > 0) {
+    if (lookupError) {
+        console.warn('[Supabase] Cart lookup failed', lookupError.message);
+        return null;
+    }
+
+    if (existingCarts && existingCarts.length > 0) {
         const cartId = existingCarts[0].id;
         localStorage.setItem('sola_supabase_cart_id', cartId);
-        console.log('[Supabase] Cart ready');
+        console.log('[Supabase] Cart ready (existing)');
+        console.log('[Supabase] Cart row saved');
         return cartId;
     }
+
+    console.log('[Supabase] Creating new cart');
 
     // Create new cart
     const { data: newCart, error: insertError } = await solaSupabase
@@ -161,13 +223,19 @@ async function getOrCreateSupabaseCart(userId) {
         .select()
         .single();
 
-    if (insertError || !newCart) {
-        console.warn('[Supabase] Cart creation failed');
+    if (insertError) {
+        console.warn('[Supabase] Cart creation failed', insertError.message);
+        return null;
+    }
+
+    if (!newCart) {
+        console.warn('[Supabase] Cart creation failed: no data returned');
         return null;
     }
 
     localStorage.setItem('sola_supabase_cart_id', newCart.id);
-    console.log('[Supabase] Cart ready');
+    console.log('[Supabase] Cart ready (created)');
+    console.log('[Supabase] Cart row saved');
     return newCart.id;
 }
 
@@ -204,12 +272,19 @@ async function persistCartToSupabase() {
     }
 
     // Delete existing cart items
-    await solaSupabase
+    console.log('[Supabase] Clearing old cart items');
+    const { error: deleteError } = await solaSupabase
         .from('cart_items')
         .delete()
         .eq('cart_id', cartId);
 
+    if (deleteError) {
+        console.warn('[Supabase] Cart items delete failed', deleteError.message);
+        // Continue anyway - might be first time
+    }
+
     // Insert current cart items
+    console.log('[Supabase] Inserting cart items');
     const cartItems = state.cart.map(item => ({
         cart_id: cartId,
         product_id: item.id,
@@ -224,14 +299,23 @@ async function persistCartToSupabase() {
 
     if (insertError) {
         console.warn('[Supabase] Cart items insert failed', insertError.message);
+        console.warn('[Supabase] Failed to save cart items - aborting');
         return;
     }
 
+    console.log('[Supabase] Cart items saved');
+
     // Update cart timestamp
-    await solaSupabase
+    console.log('[Supabase] Updating cart timestamp');
+    const { error: updateError } = await solaSupabase
         .from('carts')
         .update({ updated_at: new Date().toISOString() })
         .eq('id', cartId);
+
+    if (updateError) {
+        console.warn('[Supabase] Cart timestamp update failed', updateError.message);
+        // Non-critical, continue
+    }
 
     console.log('[Supabase] Cart persisted');
 }
