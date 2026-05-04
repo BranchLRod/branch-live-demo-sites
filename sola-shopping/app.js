@@ -1,5 +1,29 @@
 // Sola Shopping - Main Application Logic
 
+// Supabase Configuration
+const SOLA_SUPABASE_URL = 'https://ocqizpxizzqpthhlqsgt.supabase.co';
+const SOLA_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_KgaM819n-HNthgoFXhSbGA_ePO6M3qI';
+const solaSupabase = window.supabase.createClient(SOLA_SUPABASE_URL, SOLA_SUPABASE_PUBLISHABLE_KEY);
+
+// Temporary test function for Supabase connectivity
+async function testSupabaseWrite() {
+    const { data, error } = await solaSupabase
+        .from('users')
+        .insert([{ email: 'test@sola-demo.local' }])
+        .select()
+        .single();
+
+    if (error) {
+        console.warn('[Supabase] Test write failed', error.message);
+        return;
+    }
+
+    console.log('[Supabase] Test write succeeded', { user_id: data.id });
+}
+
+// Call test function once
+testSupabaseWrite();
+
 // State Management
 const state = {
     products: [],
