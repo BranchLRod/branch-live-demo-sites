@@ -21,9 +21,6 @@ async function testSupabaseWrite() {
     console.log('[Supabase] Test write succeeded', { user_id: data.id });
 }
 
-// Call test function once
-testSupabaseWrite();
-
 // State Management
 const state = {
     products: [],
