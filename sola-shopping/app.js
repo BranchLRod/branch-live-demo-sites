@@ -422,9 +422,27 @@ function showProductModal(productId) {
     if (window.solaBranch && window.solaBranch.trackViewProduct) {
         console.log('[Branch] Setting Journey data BEFORE render');
         window.solaBranch.trackViewProduct(product);
+    }
+
+    // Set Branch Journey personalization data
+    if (typeof branch !== 'undefined' && typeof branch.setBranchViewData === 'function') {
+        const userFirstName = state.user && state.user.firstName ? state.user.firstName : null;
+        const productName = product.name;
+
+        branch.setBranchViewData({
+            data: {
+                $journeys_title: userFirstName
+                    ? `${userFirstName}, love what you found?`
+                    : "Love what you found?",
+
+                $journeys_description: productName
+                    ? `Check out ${productName} in the Sola app for a smoother checkout.`
+                    : "Open it in the Sola app for a smoother checkout."
+            }
+        });
 
         // Force Journey re-render after setBranchViewData
-        if (typeof branch !== 'undefined' && typeof branch.closeJourney === 'function') {
+        if (typeof branch.closeJourney === 'function') {
             console.log('[Branch] Forcing Journey re-render');
 
             branch.closeJourney(function() {
