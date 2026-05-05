@@ -620,6 +620,7 @@
                             personalization['$journeys_description'] = 'Complete your purchase faster in the Sola app';
                         }
 
+                        personalization['$deeplink_path'] = 'cart';
                         personalization.journey_context = 'cart_intent';
                         personalization.source_surface = 'cart_page';
                         personalization.cart_value = cartValue > 0 ? cartValue.toFixed(2) : '0';
@@ -706,8 +707,17 @@
                 });
 
                 // Update Branch view data for Journey personalization
-                branch.setBranchViewData(viewData);
+                // Wrap in data object for proper Branch SDK handling
+                branch.setBranchViewData({
+                    data: viewData
+                });
+
                 console.log('[Branch] setBranchViewData updated');
+
+                // For cart view, log that link data includes Supabase IDs
+                if (currentView === 'cart' && (viewData.supabase_user_id || viewData.supabase_cart_id)) {
+                    console.log('[Branch] Cart Journey link data updated with Supabase IDs');
+                }
             };
             // Set user identity
             window.solaBranch.setIdentity = function(userId, userData = {}) {
