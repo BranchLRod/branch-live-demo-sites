@@ -149,6 +149,12 @@ async function getOrCreateSupabaseUser() {
         localStorage.setItem('sola_supabase_user_id', userId);
         localStorage.setItem('sola_supabase_cached_email', userEmail);
         console.log('[Supabase] User ready (existing)');
+
+        // Update lead attribution for existing user (upsert)
+        persistLeadAttribution(userId, prospectFields.branch_identity_id).catch(err => {
+            console.warn('[Supabase] Lead attribution failed', err.message);
+        });
+
         return userId;
     }
 
@@ -175,6 +181,12 @@ async function getOrCreateSupabaseUser() {
     localStorage.setItem('sola_supabase_cached_email', userEmail);
     console.log('[Supabase] User ready (created)');
     console.log('[Supabase] Profile upserted');
+
+    // Persist lead attribution for new user
+    persistLeadAttribution(newUser.id, prospectFields.branch_identity_id).catch(err => {
+        console.warn('[Supabase] Lead attribution failed', err.message);
+    });
+
     return newUser.id;
 }
 
@@ -318,6 +330,89 @@ async function persistCartToSupabase() {
     }
 
     console.log('[Supabase] Cart persisted');
+}
+
+// Persist lead attribution to Supabase
+async function persistLeadAttribution(userId, branchIdentityId = null) {
+    if (!userId) {
+        console.log('[Supabase] Lead attribution skipped: no user');
+        return;
+    }
+
+    if (!solaSupabase) {
+        console.warn('[Supabase] Client not initialized');
+        return;
+    }
+
+    // Get acquisition data from solaAcquisition helper
+    const attributionData = window.solaAcquisition ? window.solaAcquisition.getAttributionData() : null;
+    if (!attributionData || !attributionData.first_touch) {
+        console.log('[Supabase] Lead attribution skipped: no acquisition data');
+        return;
+    }
+
+    const firstTouch = attributionData.first_touch;
+    const lastTouch = attributionData.last_touch || firstTouch;
+
+    // Parse user agent for device info
+    const ua = navigator.userAgent;
+    let browser = 'unknown';
+    let os = 'unknown';
+    let devicePlatform = 'web';
+
+    // Browser detection
+    if (ua.includes('Chrome')) browser = 'Chrome';
+    else if (ua.includes('Safari')) browser = 'Safari';
+    else if (ua.includes('Firefox')) browser = 'Firefox';
+    else if (ua.includes('Edge')) browser = 'Edge';
+
+    // OS detection
+    if (ua.includes('Windows')) os = 'Windows';
+    else if (ua.includes('Mac OS X')) os = 'macOS';
+    else if (ua.includes('Linux')) os = 'Linux';
+    else if (ua.includes('Android')) os = 'Android';
+    else if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+
+    // Build attribution record
+    const attributionRecord = {
+        user_id: userId,
+        branch_identity_id: branchIdentityId,
+        first_referring_url: firstTouch.referrer || null,
+        last_referring_url: lastTouch.referrer || null,
+        landing_page_url: firstTouch.landing_url || window.location.origin + window.location.pathname,
+        utm_source: firstTouch.utm_source || null,
+        utm_medium: firstTouch.utm_medium || null,
+        utm_campaign: firstTouch.utm_campaign || null,
+        utm_content: firstTouch.utm_content || null,
+        utm_term: firstTouch.utm_term || null,
+        branch_link_clicked: firstTouch.branch_referring_link || null,
+        source_surface: 'web',
+        device_platform: devicePlatform,
+        browser: browser,
+        os: os,
+        // Note: city, region, country would require IP geolocation service
+        city: null,
+        region: null,
+        country: null,
+        first_touch_timestamp: firstTouch.first_touch_timestamp || new Date().toISOString(),
+        last_touch_timestamp: lastTouch.last_touch_timestamp || new Date().toISOString()
+    };
+
+    console.log('[Supabase] Lead attribution ready');
+
+    // Upsert attribution record (one per user_id)
+    const { error: upsertError } = await solaSupabase
+        .from('lead_attribution')
+        .upsert(attributionRecord, {
+            onConflict: 'user_id'
+        });
+
+    if (upsertError) {
+        console.warn('[Supabase] Lead attribution save failed', upsertError.message);
+        return;
+    }
+
+    console.log('[Supabase] Lead attribution saved');
 }
 
 // State Management
