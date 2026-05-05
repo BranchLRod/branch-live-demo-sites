@@ -1277,9 +1277,30 @@ function toggleCart() {
 
     // Track view cart when opening
     if (!wasActive && sidebar.classList.contains('active')) {
-        // Persist cart to Supabase as fallback
+        // Persist cart to Supabase as fallback, then update Journey data
         console.log('[Supabase] Persist requested: cart_open');
-        persistCartToSupabase().catch(err => console.warn('[Supabase] Cart persist failed', err.message));
+        persistCartToSupabase()
+            .then(() => {
+                // After persistence, update Branch view data with Supabase IDs for Journey personalization
+                if (window.solaBranch && window.solaBranch.updateViewData) {
+                    console.log('[Branch] Cart Journey data ready');
+                    window.solaBranch.updateViewData({
+                        view: 'cart'
+                    });
+                    console.log('[Branch] Cart Journey data updated');
+
+                    // Force Journey re-render with updated data
+                    if (typeof branch !== 'undefined' && typeof branch.closeJourney === 'function') {
+                        console.log('[Branch] Cart Journey re-render requested');
+                        branch.closeJourney(function() {
+                            setTimeout(() => {
+                                branch.track('pageview');
+                            }, 100);
+                        });
+                    }
+                }
+            })
+            .catch(err => console.warn('[Supabase] Cart persist failed', err.message));
 
         if (window.solaBranch && window.solaBranch.trackViewCart) {
             const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
