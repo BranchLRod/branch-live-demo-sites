@@ -1259,15 +1259,6 @@ function toggleCart() {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 
-    // Update URL state for Branch Journeys targeting
-    if (!wasActive && sidebar.classList.contains('active')) {
-        // Opening cart
-        URLStateManager.updateURL('cart');
-    } else if (wasActive && !sidebar.classList.contains('active')) {
-        // Closing cart - restore to home
-        URLStateManager.updateURL('home');
-    }
-
     // Prevent body scroll when cart is open (especially on mobile)
     if (sidebar.classList.contains('active')) {
         document.body.style.overflow = 'hidden';
@@ -1275,33 +1266,33 @@ function toggleCart() {
         document.body.style.overflow = '';
     }
 
-    // Track view cart when opening
+    // Handle cart opening
     if (!wasActive && sidebar.classList.contains('active')) {
-        // Persist cart to Supabase as fallback, then update Journey data
+        // Persist cart to Supabase FIRST, then update view data, THEN trigger Journey evaluation
         console.log('[Supabase] Persist requested: cart_open');
         persistCartToSupabase()
             .then(() => {
-                // After persistence, update Branch view data with Supabase IDs for Journey personalization
+                // After persistence, update Branch view data with Supabase IDs
                 if (window.solaBranch && window.solaBranch.updateViewData) {
-                    console.log('[Branch] Cart Journey data ready');
+                    console.log('[Branch] Cart Journey data ready before view update');
                     window.solaBranch.updateViewData({
                         view: 'cart'
                     });
-                    console.log('[Branch] Cart Journey data updated');
-
-                    // Force Journey re-render with updated data
-                    if (typeof branch !== 'undefined' && typeof branch.closeJourney === 'function') {
-                        console.log('[Branch] Cart Journey re-render requested');
-                        branch.closeJourney(function() {
-                            setTimeout(() => {
-                                branch.track('pageview');
-                            }, 100);
-                        });
-                    }
                 }
-            })
-            .catch(err => console.warn('[Supabase] Cart persist failed', err.message));
 
+                // Now that IDs are in view data, update URL state which triggers Journey evaluation
+                console.log('[Branch] Cart Journey view evaluation started');
+                URLStateManager.updateURL('cart');
+
+                console.log('[Branch] Cart Journey re-render skipped');
+            })
+            .catch(err => {
+                console.warn('[Supabase] Cart persist failed', err.message);
+                // Even if persistence fails, still show cart UI
+                URLStateManager.updateURL('cart');
+            });
+
+        // Track view cart event
         if (window.solaBranch && window.solaBranch.trackViewCart) {
             const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -1311,6 +1302,11 @@ function toggleCart() {
                 items: state.cart
             });
         }
+    }
+    // Handle cart closing
+    else if (wasActive && !sidebar.classList.contains('active')) {
+        // Closing cart - restore to home
+        URLStateManager.updateURL('home');
     }
 }
 
