@@ -602,6 +602,12 @@
                             productNames = firstTwo.join(' and ');
                         }
 
+                        // Log cart summary calculation (no PII)
+                        console.log('[Branch] Cart summary calculated:', {
+                            count: cartCount,
+                            value: cartValue.toFixed(2)
+                        });
+
                         // Build personalized title
                         if (cartFirstName && cartValue > 0) {
                             personalization['$journeys_title'] = cartFirstName + ', complete your $' + cartValue.toFixed(2) + ' purchase';
@@ -630,6 +636,8 @@
                         if (supabaseUserId) personalization.supabase_user_id = supabaseUserId;
                         if (supabaseCartId) personalization.supabase_cart_id = supabaseCartId;
                         if (branchIdentityId) personalization.branch_identity_id = branchIdentityId;
+
+                        console.log('[Branch] Cart Journey payload values ready');
                         break;
 
                     case 'checkout':

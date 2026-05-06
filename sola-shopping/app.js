@@ -431,6 +431,9 @@ const state = {
     }
 };
 
+// Expose state to window for Branch Journey personalization
+window.state = state;
+
 // URL State Management for Branch Journeys targeting
 const URLStateManager = {
     updateURL(view, params = {}) {
