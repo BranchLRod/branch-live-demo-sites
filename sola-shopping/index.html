@@ -648,8 +648,43 @@
                         break;
 
                     case 'confirmation':
-                        personalization['$journeys_title'] = 'Track your order in the app';
-                        personalization['$journeys_description'] = 'Get updates and manage your purchase from Sola.';
+                        // Get order context from updates
+                        const orderId = context.order_id || null;
+                        const orderFirstName = context.first_name || null;
+                        const orderValue = context.cart_value || 0;
+                        const orderCount = context.cart_count || 0;
+                        const orderSupabaseUserId = context.supabase_user_id || null;
+                        const orderSupabaseCartId = context.supabase_cart_id || null;
+                        const orderBranchIdentityId = context.branch_identity_id || null;
+
+                        // Build personalized title
+                        if (orderFirstName) {
+                            personalization.order_journey_title = orderFirstName + ', your order is confirmed';
+                        } else {
+                            personalization.order_journey_title = 'Your order is confirmed';
+                        }
+
+                        // Build personalized description
+                        if (orderId) {
+                            personalization.order_journey_description = 'Track order #' + orderId + ' and get delivery updates in the Sola app';
+                        } else {
+                            personalization.order_journey_description = 'Track your order and get delivery updates in the Sola app';
+                        }
+
+                        // Set standard Journey keys
+                        personalization['$journeys_title'] = personalization.order_journey_title;
+                        personalization['$journeys_description'] = personalization.order_journey_description;
+
+                        // Set deep link and context
+                        personalization['$deeplink_path'] = 'order';
+                        personalization.order_id = orderId || '';
+                        personalization.first_name = orderFirstName || '';
+                        personalization.cart_value = orderValue > 0 ? orderValue.toFixed(2) : '0';
+                        personalization.cart_count = orderCount;
+                        if (orderSupabaseUserId) personalization.supabase_user_id = orderSupabaseUserId;
+                        if (orderSupabaseCartId) personalization.supabase_cart_id = orderSupabaseCartId;
+                        if (orderBranchIdentityId) personalization.branch_identity_id = orderBranchIdentityId;
+
                         personalization.journey_context = 'post_purchase';
                         personalization.source_surface = 'confirmation_page';
                         break;

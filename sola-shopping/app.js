@@ -1323,7 +1323,31 @@ function showCheckoutConfirmation() {
     const orderNumber = 'SO-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     const itemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    // Update URL state for Branch Journeys targeting
+    // Get user data for Order Journey personalization
+    const currentUser = window.getCurrentUser ? window.getCurrentUser() : null;
+    const firstName = currentUser && currentUser.firstName ? currentUser.firstName : null;
+    const supabaseUserId = localStorage.getItem('sola_supabase_user_id');
+    const supabaseCartId = localStorage.getItem('sola_supabase_cart_id');
+    const branchIdentityId = currentUser && currentUser.id ? currentUser.id : null;
+
+    // Update Branch view data with Order Journey context BEFORE URL change
+    if (window.solaBranch && window.solaBranch.updateViewData) {
+        console.log('[Branch] Order Journey payload values ready');
+        window.solaBranch.updateViewData({
+            view: 'confirmation',
+            order_id: orderNumber,
+            first_name: firstName,
+            cart_value: total,
+            cart_count: itemCount,
+            supabase_user_id: supabaseUserId,
+            supabase_cart_id: supabaseCartId,
+            branch_identity_id: branchIdentityId
+        });
+        console.log('[Branch] Order Journey link data updated');
+    }
+
+    // Update URL state for Branch Journeys targeting (triggers Journey evaluation)
+    console.log('[Branch] Order Journey view evaluation started');
     URLStateManager.updateURL('confirmation', { order_id: orderNumber });
 
     // Track purchase with full cart product details
@@ -1343,7 +1367,7 @@ function showCheckoutConfirmation() {
         });
     }
 
-    // Clear cart AFTER purchase is tracked
+    // Clear cart AFTER purchase is tracked and Journey data is set
     clearCart();
 
     // Close cart (but don't update URL since we're already on confirmation)
