@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Sola Shopping - Life, Simplified</title>
     <link rel="icon" href="favicon.png" type="image/x-icon">
     
@@ -1476,10 +1478,13 @@
                             background: white;
                             border-radius: 8px;
                             padding: 2rem;
-                            max-width: 600px;
+                            max-width: min(600px, 100vw - 2rem);
                             width: 90%;
+                            max-height: 90vh;
+                            overflow-y: auto;
                             position: relative;
                             animation: slideUp 0.3s ease;
+                            -webkit-overflow-scrolling: touch;
                         }
                         
                         .branch-modal-close {
@@ -1574,6 +1579,28 @@
                             to {
                                 transform: translateY(0);
                                 opacity: 1;
+                            }
+                        }
+
+                        /* iOS Safari fixes */
+                        @supports (-webkit-touch-callout: none) {
+                            .branch-modal-content {
+                                max-width: calc(100vw - 2rem);
+                                padding: 1.5rem;
+                            }
+
+                            .branch-modal-options {
+                                flex-direction: column;
+                                gap: 1rem;
+                            }
+
+                            .qr-container {
+                                min-height: 150px;
+                            }
+
+                            .qr-container img {
+                                max-width: 100%;
+                                height: auto;
                             }
                         }
                     </style>

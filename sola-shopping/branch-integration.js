@@ -593,4 +593,129 @@ if (typeof branch !== 'undefined') {
     };
 }
 
+// Branch SDK wrapper for deep link data management
+window.solaBranch = {
+    // Store current view data for Branch Journeys
+    currentViewData: {},
+
+    // Update Branch Journey link data
+    updateViewData: function(data) {
+        console.log('[Branch] updateViewData called with:', Object.keys(data).join(', '));
+
+        // Merge new data into current view data
+        this.currentViewData = {
+            ...this.currentViewData,
+            ...data
+        };
+
+        // Get Supabase IDs from localStorage
+        const supabaseUserId = localStorage.getItem('sola_supabase_user_id');
+        const supabaseCartId = localStorage.getItem('sola_supabase_cart_id');
+
+        // Get current user from account state
+        const currentUser = window.getCurrentUser ? window.getCurrentUser() : null;
+        const branchIdentityId = currentUser && currentUser.id ? currentUser.id : null;
+        const firstName = currentUser && currentUser.firstName ? currentUser.firstName : null;
+
+        // Build deep link data payload
+        const linkData = {
+            ...this.currentViewData,
+            supabase_user_id: supabaseUserId,
+            supabase_cart_id: supabaseCartId,
+            branch_identity_id: branchIdentityId,
+            first_name: firstName
+        };
+
+        // Set deep link path based on view
+        if (data.view === 'cart') {
+            linkData.$deeplink_path = 'cart';
+            console.log('[Branch] Cart Journey data ready');
+        } else if (data.view === 'confirmation' && data.order_id) {
+            linkData.$deeplink_path = 'order';
+            linkData.order_id = data.order_id;
+            console.log('[Branch] Order Journey data ready');
+        }
+
+        // Update Branch link data for Journeys
+        if (typeof branch !== 'undefined' && typeof branch.setBranchViewData === 'function') {
+            branch.setBranchViewData({
+                data: linkData
+            });
+            console.log('[Branch] Journey link data updated with IDs');
+        }
+    },
+
+    // Track commerce events (wrapped)
+    trackViewProduct: function(product) {
+        if (typeof branch !== 'undefined') {
+            branch.logEvent('VIEW_ITEM', {
+                content_items: [{
+                    '$og_title': product.name,
+                    '$og_description': product.description,
+                    '$og_image_url': product.image,
+                    '$price': product.price,
+                    '$product_name': product.name,
+                    '$product_id': product.id
+                }],
+                vertical: 'shopping',
+                source_surface: 'web'
+            });
+        }
+    },
+
+    trackAddToCart: function(product, cartData) {
+        if (typeof branch !== 'undefined') {
+            branch.logEvent('ADD_TO_CART', {
+                content_items: [{
+                    '$price': product.price,
+                    '$product_name': product.name,
+                    '$product_id': product.id,
+                    '$quantity': 1
+                }],
+                cart_value: cartData.total,
+                cart_item_count: cartData.itemCount,
+                vertical: 'shopping',
+                source_surface: 'web'
+            });
+        }
+    },
+
+    trackViewCart: function(cartData) {
+        if (typeof branch !== 'undefined') {
+            branch.logEvent('VIEW_CART', {
+                cart_value: cartData.total,
+                cart_item_count: cartData.itemCount,
+                vertical: 'shopping',
+                source_surface: 'web'
+            });
+        }
+    },
+
+    trackStartCheckout: function(cartData) {
+        if (typeof branch !== 'undefined') {
+            branch.logEvent('INITIATE_PURCHASE', {
+                cart_value: cartData.total,
+                cart_item_count: cartData.itemCount,
+                vertical: 'shopping',
+                source_surface: 'web'
+            });
+        }
+    },
+
+    trackPurchase: function(orderData) {
+        if (typeof branch !== 'undefined') {
+            branch.logEvent('PURCHASE', {
+                revenue: orderData.total,
+                currency: 'USD',
+                transaction_id: orderData.orderId,
+                cart_value: orderData.subtotal,
+                shipping: orderData.shipping,
+                vertical: 'shopping',
+                source_surface: 'web'
+            });
+        }
+    }
+};
+
 console.log('Branch integration loaded for Sola Shopping demo');
+console.log('[Branch] solaBranch wrapper initialized');
