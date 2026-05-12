@@ -90,8 +90,7 @@
 html {
     scroll-behavior: smooth;
     width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
@@ -122,8 +121,6 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 auto;
     padding: 0 2rem;
     width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
 }
 
 /* Header */
@@ -133,8 +130,10 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 2px 12px var(--shadow);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1100;
     transition: all var(--transition-base);
+    pointer-events: auto;
+    isolation: isolate;
 }
 
 .nav-wrapper {
@@ -202,6 +201,9 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     gap: 1.5rem;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1101;
+    pointer-events: auto;
 }
 
 /* Search Bar */
@@ -284,6 +286,8 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    z-index: 1102;
+    pointer-events: auto;
 }
 
 .user-dropdown-btn {
@@ -298,6 +302,9 @@ h1, h2, h3, h4, h5, h6 {
     transition: all var(--transition-base);
     font-family: var(--font-secondary);
     font-size: 0.875rem;
+    position: relative;
+    z-index: 1103;
+    pointer-events: auto;
 }
 
 .user-dropdown-btn:hover {
@@ -323,15 +330,19 @@ h1, h2, h3, h4, h5, h6 {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all var(--transition-base);
-    z-index: 200;
+    z-index: 1104;
     overflow: hidden;
+    pointer-events: none;
 }
 
 .user-dropdown.active {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
 }
+
+/* Removed duplicate - merged with .user-dropdown above */
 
 .dropdown-item {
     display: block;
@@ -363,6 +374,8 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 12px;
     transition: all var(--transition-base);
     box-shadow: 0 2px 8px var(--shadow);
+    z-index: 1103;
+    pointer-events: auto;
 }
 
 .cart-btn:hover {
@@ -1056,10 +1069,12 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 1000;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
 }
 
 .modal.active {
     display: flex;
+    pointer-events: auto;
 }
 
 .modal-content {
@@ -1872,10 +1887,12 @@ h1, h2, h3, h4, h5, h6 {
     backdrop-filter: blur(4px);
     z-index: 999;
     animation: fadeIn 0.3s ease;
+    pointer-events: none;
 }
 
 .overlay.active {
     display: block;
+    pointer-events: auto;
 }
 
 @keyframes fadeIn {
