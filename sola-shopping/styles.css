@@ -238,47 +238,7 @@ h1, h2, h3, h4, h5, h6 {
     pointer-events: none;
 }
 
-/* Wishlist Button */
-.wishlist-btn {
-    position: relative;
-    background: transparent;
-    border: 2px solid var(--neutral-200);
-    cursor: pointer;
-    padding: 0.5rem;
-    color: var(--text);
-    border-radius: 12px;
-    transition: all var(--transition-base);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.wishlist-btn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
-}
-
-.wishlist-btn:hover svg {
-    fill: var(--primary);
-    stroke: var(--primary);
-}
-
-.wishlist-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: var(--primary);
-    color: var(--white);
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 2px 5px;
-    border-radius: 10px;
-    min-width: 18px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(255, 107, 107, 0.4);
-}
+/* Wishlist removed - not used in this demo */
 
 /* User Dropdown */
 .user-info {
@@ -1037,25 +997,7 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateY(0);
 }
 
-.view-in-app {
-    padding: 0.625rem 1rem;
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--mint) 100%);
-    color: var(--white);
-    border: none;
-    border-radius: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
-}
-
-.view-in-app:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
-}
+/* View in app button removed - Branch Journeys handle app migration */
 
 /* Modal */
 .modal {
@@ -1740,32 +1682,7 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(0.98);
 }
 
-/* App Secondary Button (in modals) */
-.btn-app-secondary {
-    padding: 0.75rem 1.5rem;
-    background: var(--neutral-50);
-    color: var(--text);
-    border: 1px solid var(--neutral-200);
-    border-radius: 12px;
-    font-family: var(--font-secondary);
-    font-weight: 500;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-}
-
-.btn-app-secondary:hover {
-    background: var(--secondary);
-    border-color: var(--secondary);
-    color: var(--white);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
-}
+/* App secondary button removed - Branch Journeys handle app migration */
 
 /* Checkout Confirmation */
 .checkout-confirmation {
@@ -2485,12 +2402,6 @@ h1, h2, h3, h4, h5, h6 {
         display: none;
     }
 
-    /* Wishlist Mobile */
-    .wishlist-btn {
-        padding: 0.375rem;
-        flex-shrink: 0;
-    }
-
     /* User Dropdown Mobile */
     .user-name {
         display: none;
@@ -2686,17 +2597,12 @@ h1, h2, h3, h4, h5, h6 {
     .product-actions {
         gap: 0.375rem;
     }
-    
+
     .add-to-cart {
         padding: 0.625rem 0.5rem;
         font-size: 0.875rem;
     }
-    
-    .view-in-app {
-        padding: 0.625rem 0.75rem;
-        font-size: 0.875rem;
-    }
-    
+
     /* Modal Mobile */
     .modal-content {
         width: 95%;

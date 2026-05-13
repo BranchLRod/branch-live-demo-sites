@@ -419,7 +419,6 @@ async function persistLeadAttribution(userId, branchIdentityId = null) {
 const state = {
     products: [],
     cart: [],
-    wishlist: [],
     currentCategory: 'all',
     currentGender: 'all',
     searchQuery: '',
@@ -721,12 +720,6 @@ function renderProducts() {
                 ${stockInfo.showWarning ? `<div class="stock-warning">${stockInfo.message}</div>` : ''}
                 <div class="product-actions">
                     <button class="add-to-cart" data-id="${product.id}">Add to Cart</button>
-                    <button class="view-in-app" data-id="${product.id}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        </svg>
-                        App
-                    </button>
                 </div>
             </div>
         </div>
@@ -735,7 +728,7 @@ function renderProducts() {
     // Add event listeners to product cards
     document.querySelectorAll('.product-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('add-to-cart') && !e.target.classList.contains('view-in-app')) {
+            if (!e.target.classList.contains('add-to-cart')) {
                 showProductModal(card.dataset.id);
             }
         });
@@ -748,14 +741,8 @@ function renderProducts() {
             addToCart(btn.dataset.id);
         });
     });
-    
-    // View in app buttons
-    document.querySelectorAll('.view-in-app').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            viewProductInApp(btn.dataset.id);
-        });
-    });
+
+    // View in app buttons removed - Branch Journeys handle app migration
 }
 
 // Filter products based on current filters
@@ -986,12 +973,6 @@ function showProductModal(productId) {
                         </svg>
                         Add to Cart
                     </button>
-                    <button class="btn btn-app-secondary" onclick="viewProductInApp('${product.id}')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        </svg>
-                        View in app for faster checkout
-                    </button>
                 </div>
             </div>
         </div>
@@ -1067,45 +1048,7 @@ function closeModal() {
     URLStateManager.updateURL('home');
 }
 
-// Wishlist Management
-function loadWishlist() {
-    const savedWishlist = localStorage.getItem('solaShoppingWishlist');
-    if (savedWishlist) {
-        state.wishlist = JSON.parse(savedWishlist);
-        updateWishlistUI();
-    }
-}
-
-function saveWishlist() {
-    localStorage.setItem('solaShoppingWishlist', JSON.stringify(state.wishlist));
-    updateWishlistUI();
-}
-
-function toggleWishlist(productId) {
-    const index = state.wishlist.indexOf(productId);
-
-    if (index > -1) {
-        // Remove from wishlist
-        state.wishlist.splice(index, 1);
-        showNotification('Removed from wishlist');
-    } else {
-        // Add to wishlist
-        state.wishlist.push(productId);
-        const product = state.products.find(p => p.id === productId);
-        if (product) {
-            showNotification(`${product.name} added to wishlist!`);
-        }
-    }
-
-    saveWishlist();
-}
-
-function updateWishlistUI() {
-    const wishlistCount = document.getElementById('wishlistCount');
-    if (wishlistCount) {
-        wishlistCount.textContent = state.wishlist.length;
-    }
-}
+// Wishlist removed - not used in this demo
 
 // Cart Management
 function loadCart() {
@@ -1535,7 +1478,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load initial data
     loadProducts();
     loadCart();
-    loadWishlist();
     
     // Category filter
     document.querySelectorAll('#categoryFilter .filter-btn').forEach(btn => {
@@ -1582,17 +1524,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('[SafeBind] Element not found: sortSelect');
     }
 
-    // Wishlist button
-    const wishlistBtn = document.getElementById('wishlistBtn');
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener('click', () => {
-            console.log('Wishlist clicked, handleWishlistClick available:', typeof handleWishlistClick);
-            handleWishlistClick();
-        });
-        console.log('[SafeBind] Listener attached: wishlistBtn');
-    } else {
-        console.warn('[SafeBind] Element not found: wishlistBtn');
-    }
+    // Wishlist removed - not used in this demo
 
     // User dropdown toggle
     const userDropdownBtn = document.getElementById('userDropdownBtn');

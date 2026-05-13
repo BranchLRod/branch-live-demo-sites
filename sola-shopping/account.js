@@ -155,7 +155,6 @@ function updateDropdownForLoggedIn() {
     dropdown.innerHTML = `
         <a href="#" class="dropdown-item" onclick="event.preventDefault(); safeShowNotification('Account settings coming soon');">My Account</a>
         <a href="#" class="dropdown-item" onclick="event.preventDefault(); safeShowNotification('Order history coming soon');">My Orders</a>
-        <a href="#" class="dropdown-item" onclick="event.preventDefault(); handleWishlistClick();">Wishlist</a>
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item" onclick="event.preventDefault(); signOutUser();">Sign Out</a>
     `;
@@ -415,9 +414,6 @@ function handlePostAuthActions() {
                 showCheckoutConfirmation();
             }
         }, 300); // Small delay to allow cart close animation
-    } else if (context.action === 'wishlist') {
-        // Navigate to wishlist
-        safeShowNotification('Your wishlist is now synced!');
     } else if (context.action === 'newsletter') {
         // Track newsletter signup
         safeShowNotification('You\'re subscribed! Check your email for exclusive deals.');
@@ -450,16 +446,7 @@ function requireAuth(reason = 'Please sign in to continue', action = null) {
     return false;
 }
 
-// Handle wishlist interaction
-function handleWishlistClick() {
-    console.log('handleWishlistClick called, isAuthenticated:', isUserAuthenticated());
-
-    if (!requireAuth('Sign in to save your favorite items', 'wishlist')) {
-        return;
-    }
-
-    safeShowNotification('Your wishlist is waiting — save items for later!');
-}
+// Wishlist removed - not used in this demo
 
 // Handle checkout with auth check
 function handleCheckoutWithAuth() {
@@ -625,7 +612,6 @@ window.signOutUser = signOutUser;
 window.isUserAuthenticated = isUserAuthenticated;
 window.getCurrentUser = getCurrentUser;
 window.requireAuth = requireAuth;
-window.handleWishlistClick = handleWishlistClick;
 window.handleCheckoutWithAuth = handleCheckoutWithAuth;
 window.handleNewsletterSignup = handleNewsletterSignup;
 window.getSolaLeadProfilePayload = getSolaLeadProfilePayload;
